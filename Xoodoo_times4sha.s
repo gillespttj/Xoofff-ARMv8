@@ -21,8 +21,8 @@
     SLI     V21.4S, V13.4S, #14
     SLI     V22.4S, V14.4S, #14
     SLI     V23.4S, V15.4S, #14
-    EOR3    V12.16B, V8.16B, V20.16B, V16.16B
-    EOR3    V13.16B, V9.16B, V21.16B, V17.16B
+    EOR3    V12.16B, V8.16B,  V20.16B, V16.16B
+    EOR3    V13.16B, V9.16B,  V21.16B, V17.16B
     EOR3    V14.16B, V10.16B, V22.16B, V18.16B
     EOR3    V15.16B, V11.16B, V23.16B, V19.16B
     EOR3    V0.16B,  V0.16B, V20.16B, V16.16B
@@ -55,17 +55,26 @@
     SLI     V10.4S, V14.4S, #11
     SLI     V11.4S, V15.4S, #11
     BCAX    V16.16B, V7.16B, V0.16B, V8.16B
-    BCAX    V17.16B, V4.16B, V1.16B,  V9.16B
-    BCAX    V18.16B, V5.16B, V2.16B,  V10.16B
-    BCAX    V19.16B, V6.16B, V3.16B,  V11.16B
+    BCAX    V17.16B, V4.16B, V1.16B, V9.16B
+    BCAX    V18.16B, V5.16B, V2.16B, V10.16B
+    BCAX    V19.16B, V6.16B, V3.16B, V11.16B
     BCAX    V20.16B, V8.16B,  V7.16B, V0.16B
     BCAX    V21.16B, V9.16B,  V4.16B, V1.16B
     BCAX    V22.16B, V10.16B, V5.16B, V2.16B
     BCAX    V23.16B, V11.16B, V6.16B, V3.16B
     BCAX    V0.16B, V0.16B, V8.16B,  V7.16B
-    BCAX    V1.16B, V1.16B,  V9.16B,  V4.16B
-    BCAX    V2.16B, V2.16B,  V10.16B, V5.16B
-    BCAX    V3.16B, V3.16B,  V11.16B, V6.16B
+    BCAX    V1.16B, V1.16B, V9.16B,  V4.16B
+    BCAX    V2.16B, V2.16B, V10.16B, V5.16B
+    BCAX    V3.16B, V3.16B, V11.16B, V6.16B
+    
+    MOV     V4.16B, V16.16B
+    MOV     V5.16B, V17.16B
+    MOV     V6.16B, V18.16B
+    MOV     V7.16B, V19.16B
+    MOV     V8.16B, V20.16B
+    MOV     V9.16B, V21.16B
+    MOV     V10.16B, V22.16B
+    MOV     V11.16B, V23.16B
 .endm
 
 .macro rho_e
@@ -120,23 +129,23 @@ Xoodootimes4_PermuteAll_6rounds:
     theta 
     MOVI     V25.4S, #0x60
     iota_1
-    rho_w_chi
+    rho_w_chi 
     rho_e
     
     theta
-    MOVI       V25.4S, #0x2C
+    MOVI     V25.4S, #0x2C
     iota_1
     rho_w_chi
     rho_e
     
     theta
-    MOV     X3, #0x0000038000000380
+    MOV      X3, #0x0000038000000380
     iota_2
     rho_w_chi
     rho_e
     
     theta
-    MOVI      V25.4S, #0xF0
+    MOVI     V25.4S, #0xF0
     iota_1
     rho_w_chi
     rho_e

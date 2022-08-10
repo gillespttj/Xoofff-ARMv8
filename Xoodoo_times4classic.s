@@ -172,19 +172,19 @@ Xoodootimes4_SixRoundsClassic:
     rho_e
     
     theta
-    MOVI       V25.4S, #0x2C
+    MOVI     V25.4S, #0x2C
     iota_1
     rho_w_chi
     rho_e
     
     theta
-    MOV     X3, #0x0000038000000380
+    MOV      X3, #0x0000038000000380
     iota_2
     rho_w_chi
     rho_e
     
     theta
-    MOVI      V25.4S, #0xF0
+    MOVI     V25.4S, #0xF0
     iota_1
     rho_w_chi
     rho_e

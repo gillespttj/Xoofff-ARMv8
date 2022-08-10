@@ -466,8 +466,6 @@ Xoodootimes4_Load4InterlaceNoSha:
 .type Xoodootimes4_SixRoundsNoSha,%function
 
 Xoodootimes4_SixRoundsNoSha:
-
-    MOVI    V24.4S,  #0x00
     
     theta 
     MOV     X3, #0x3C00
