@@ -1,0 +1,5 @@
+
+aarch64-linux-gnu-gcc -march=armv8.4-a+sha3 -o test test.c
+
+qemu-aarch64 -L /usr/aarch64-linux-gnu ./test test
+
