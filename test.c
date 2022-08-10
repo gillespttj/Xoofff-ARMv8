@@ -3,51 +3,41 @@
 #include <string.h>
 #include "Xoodoo_times4.h"
 #include "Xoodoo_times4ref.h"
+#include "Xoodoo_times4sha.h"
+#include "Xoodoo_times4no_sha.h"
+#include "Xoodoo_times4classic.h"
 #include <math.h> //todelete
 #include <time.h>
 
 #define MAX_ROUNDS 1000000
 
 extern void Xoodootimes4_Load4Interlace(unsigned int *src);
-extern void Xoodootimes4_Theta();
-extern void Xoodootimes4_Rho_east_west_Iota_Khi(unsigned long int *C);
 extern void Xoodootimes4_Store4Deinterlace(unsigned int *dest);
+extern void Xoodootimes4_SixRounds();
 
-unsigned long int rc[12] = {0x30C,0x3CC00,0xFF00,0xFC000,0xCF0,0x3C00,0x330,0x30C00,
-		0xF300,0xFF000,0xFC0,0x33C0};
+extern void Xoodootimes4_PermuteAll_6rounds(unsigned int *src, unsigned int *dest);
 
+extern void Xoodootimes4_Load4InterlaceNoSha(unsigned int *src);
+extern void Xoodootimes4_SixRoundsNoSha();
+extern void Xoodootimes4_Store4DeinterlaceNoSha(unsigned int *dest);
+
+extern void Xoodootimes4_SixRoundsClassic(unsigned int *src, unsigned int *dest);
+
+		
 void SixXoodoos(unsigned int *src, unsigned int *dest)
 {
-	unsigned long int* c = (unsigned long int*) malloc(sizeof(unsigned long int));
-	
 	Xoodootimes4_Load4Interlace(src);
-	
-	c[0] = rc[0];
-	Xoodootimes4_Theta();
-	Xoodootimes4_Rho_east_west_Iota_Khi(c);
-	
-	c[0] = rc[1];
-	Xoodootimes4_Theta();
-	Xoodootimes4_Rho_east_west_Iota_Khi(c);
-	
-	c[0] = rc[2];
-	Xoodootimes4_Theta();
-	Xoodootimes4_Rho_east_west_Iota_Khi(c);
-	
-	c[0] = rc[3];
-	Xoodootimes4_Theta();
-	Xoodootimes4_Rho_east_west_Iota_Khi(c);
-	
-	c[0] = rc[4];
-	Xoodootimes4_Theta();
-	Xoodootimes4_Rho_east_west_Iota_Khi(c);
-	
-	c[0] = rc[5];
-	Xoodootimes4_Theta();
-	Xoodootimes4_Rho_east_west_Iota_Khi(c);
-	
+	Xoodootimes4_SixRounds();
 	Xoodootimes4_Store4Deinterlace(dest);
 }
+
+void SixXoodoosNoSha(unsigned int *src, unsigned int *dest)
+{
+	Xoodootimes4_Load4InterlaceNoSha(src);
+	Xoodootimes4_SixRoundsNoSha();
+	Xoodootimes4_Store4DeinterlaceNoSha(dest);
+}
+
 
 void roll_xc();
 
@@ -103,7 +93,7 @@ int main(int argc, char *argv[])
 		unsigned int* b = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 		
 		
-		startTime = (float)clock()/CLOCKS_PER_SEC;
+		/*startTime = (float)clock()/CLOCKS_PER_SEC;
 		for(unsigned int i=0; i<MAX_ROUNDS; i++)
 		{
 			Xoodoo_Permute_Nrounds((void*) b, 6);
@@ -125,10 +115,30 @@ int main(int argc, char *argv[])
 			MAX_ROUNDS, endTime-startTime);
 		
 		
+		startTime = (float)clock()/CLOCKS_PER_SEC;
+		for(unsigned int i=0; i<MAX_ROUNDS; i++)
+		{
+			Xoodootimes4_PermuteAll_6rounds(a,b);
+		}
+		endTime = (float)clock()/CLOCKS_PER_SEC;
+		
+		printf("Time spend for %d times 6 rounds of Xoodoo with regular implementation : %f \n",
+			MAX_ROUNDS, endTime-startTime);*/
+			
+			
+		SixXoodoos(a,b); //interleaved optimized
+		//Xoodootimes4_PermuteAll_6rounds(a, b); //no interleaving but sha
+		//SixXoodoosNoSha(a,b); //interleaved but without sha instructions
+		//Xoodootimes4_SixRoundsClassic(a,b); // no interleaving, no sha instructions, but SIMD
+		
+		//memcpy(b, a, 4*12*sizeof(unsigned int));
+		//Xoodoo_Permute_Nrounds((void*) b, 6); //ref
+		
+		
 		// Result
-		/*for (int i=0; i<12; i++){
+		for (int i=0; i<12; i++){
 			printf("%x %x:%x-%x:%x\n", i, b[4*i], b[4*i+1], b[4*i+2], b[4*i+3]);
-		}*/
+		}
 		
 		
 		free(a);
