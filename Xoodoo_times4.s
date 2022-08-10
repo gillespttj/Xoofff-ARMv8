@@ -984,33 +984,40 @@ Xoodootimes4_SixRounds:
 .endm
 
 .macro load1by1 reg
-	ST1	{V12.2D}, [\reg]
+	/*LD1	{V12.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V13.2D}, [\reg]
+	LD1	{V13.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V14.2D}, [\reg]
+	LD1	{V14.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V15.2D}, [\reg]
+	LD1	{V15.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V16.2D}, [\reg]
+	LD1	{V16.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V17.2D}, [\reg]
+	LD1	{V17.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V18.2D}, [\reg]
+	LD1	{V18.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V19.2D}, [\reg]
+	LD1	{V19.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V20.2D}, [\reg]
+	LD1	{V20.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V21.2D}, [\reg]
+	LD1	{V21.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V22.2D}, [\reg]
+	LD1	{V22.2D}, [\reg]
 	ADD	\reg, \reg, #16
-	ST1	{V23.2D}, [\reg]
-	SUB	\reg, \reg, #176
+	LD1	{V23.2D}, [\reg]
+	SUB	\reg, \reg, #176*/
+	
+	LD1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
+	SUB	\reg\(), \reg\(), #128
 .endm
 
-.macro roll_Xc_second reg	
+.macro roll_Xc_second
 	XAR	V25.2D, V16.2D, V24.2D, #38 
 	XAR	V26.2D, V20.2D, V24.2D, #58
 	
@@ -1047,7 +1054,7 @@ Xoodootimes4_SixRounds:
 .endm
 
 .macro store1by1
-	ST1	{V17.2D}, [x1]
+	/*ST1	{V17.2D}, [x1]
 	ADD	x1, x1, #16
 	ST1	{V18.2D}, [x1]
 	ADD	x1, x1, #16
@@ -1071,7 +1078,19 @@ Xoodootimes4_SixRounds:
 	ADD	x1, x1, #16
 	ST1	{V12.2D}, [x1]
 	ADD	x1, x1, #16
-	ST1	{V13.2D}, [x1]
+	ST1	{V13.2D}, [x1]*/
+	
+	ST1	{V17.2D, V18.2D, V19.2D}, [x1]
+	ADD	x1, x1, #48
+	ST1	{V16.2D}, [x1]
+	ADD	x1, x1, #16
+	ST1	{V21.2D, V22.2D, V23.2D}, [x1]
+	ADD	x1, x1, #48
+	ST1	{V20.2D}, [x1]
+	ADD	x1, x1, #16
+	ST1	{V14.2D, V15.2D}, [x1]
+	ADD	x1, x1, #32
+	ST1	{V12.2D, V13.2D}, [x1]
 .endm
 
 
@@ -1099,10 +1118,10 @@ roll_Xc_first:
 roll_Xc:
 	
 	load4interleave x0
-	
+	/*
 	load1by1 x1
-	roll_Xc_second x2
-	store1by1 
+	roll_Xc_second
+	store1by1 */
 	
 	Xoodoo
 	

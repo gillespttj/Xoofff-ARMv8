@@ -35,18 +35,20 @@ int main(int argc, char *argv[])
 	{
 		float startTime, endTime;
 		int benchmark=0, decompose=0, Xoodoo4=0, Xoodoo4sha=0, Xoodoo4no_sha=0, Xoodoo4classic=0, 
-			Xoodoo1=0, Xoodoo1ref=0;
+			Xoodoo1=0, Xoodoo1ref=0, roll_benchmark=0;
 		
 		for(int i=1; i<argc; i++)
 		{
-			if(strstr(argv[i], "benchmark")) benchmark = 1;
-			else if(strstr(argv[i], "decompose")) decompose = 1;
-			else if(strstr(argv[i], "Xoodoo4")) Xoodoo4 = 1;
-			else if(strstr(argv[i], "Xoodoo4sha")) Xoodoo4sha = 1;
-			else if(strstr(argv[i], "Xoodoo4no_sha")) Xoodoo4no_sha = 1;
-			else if(strstr(argv[i], "Xoodoo4classic")) Xoodoo4classic = 1;
-			else if(strstr(argv[i], "Xoodoo1")) Xoodoo1 = 1;
-			else if(strstr(argv[i], "Xoodoo1ref")) Xoodoo1ref = 1;
+			if(strcmp(argv[1], "benchmark") == 0) benchmark = 1;
+			else if(strcmp(argv[1], "roll_benchmark") == 0) roll_benchmark = 1;
+			else if(strcmp(argv[1], "decompose") == 0) decompose = 1;
+			else if(strcmp(argv[1], "Xoodoo4") == 0) Xoodoo4 = 1;
+			else if(strcmp(argv[1], "Xoodoo4sha") == 0) Xoodoo4sha = 1;
+			else if(strcmp(argv[1], "Xoodoo4no_sha") == 0) Xoodoo4no_sha = 1;
+			else if(strcmp(argv[1], "Xoodoo4classic") == 0) Xoodoo4classic = 1;
+			else if(strcmp(argv[1], "Xoodoo1") == 0) Xoodoo1 = 1;
+			else if(strcmp(argv[1], "Xoodoo1ref") == 0) Xoodoo1ref = 1;
+			else printf("Wrong argument\n");
 		}
 		
 		
@@ -120,7 +122,7 @@ int main(int argc, char *argv[])
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
 			{
-				SixXoodoosNoSha(a,b);
+				roll_Xc(a,b);
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
@@ -137,6 +139,32 @@ int main(int argc, char *argv[])
 			printf("Time spend for %d times 6 rounds of 4 Xoodoos without interleaving or SHA3 instructions : %f \n",
 				MAX_ROUNDS, endTime-startTime);
 		}	
+		
+		
+		if(roll_benchmark)
+		{
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				roll_Xc(a, c);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			
+			printf("Time spend for %d rolls + 6 rounds of Xoodoo with interlacing : %f \n",
+				MAX_ROUNDS, endTime-startTime);
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				roll_Xc_sha(a, c);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			
+			printf("Time spend for %d rolls + 6 rounds of Xoodoo without interlacing : %f \n",
+				MAX_ROUNDS, endTime-startTime);
+		}
 		
 		
 		

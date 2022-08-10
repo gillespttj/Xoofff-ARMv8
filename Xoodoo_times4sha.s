@@ -187,40 +187,6 @@
 	rho_e
 .endm
 
-.macro loadK reg
-	LD4	{V12.S, V13.S, V14.S, V15.S}[0], [\reg]
-	ADD	\reg\(), \reg\(), #16
-	LD4	{V16.S, V17.S, V18.S, V19.S}[0], [\reg]
-	ADD	\reg\(), \reg\(), #16
-	LD4	{V20.S, V21.S, V22.S, V23.S}[0], [\reg]
-	
-	MOV	V12.S[1], V12.S[0]
-	MOV	V13.S[1], V13.S[0]
-	MOV	V14.S[1], V14.S[0]
-	MOV	V15.S[1], V15.S[0]
-	MOV	V16.S[1], V16.S[0]
-	MOV	V17.S[1], V17.S[0]
-	MOV	V18.S[1], V18.S[0]
-	MOV	V19.S[1], V19.S[0]
-	MOV	V20.S[1], V20.S[0]
-	MOV	V21.S[1], V21.S[0]
-	MOV	V22.S[1], V22.S[0]
-	MOV	V23.S[1], V23.S[0]
-	
-	MOV	V12.D[1], V12.D[0]
-	MOV	V13.D[1], V13.D[0]
-	MOV	V14.D[1], V14.D[0]
-	MOV	V15.D[1], V15.D[0]
-	MOV	V16.D[1], V16.D[0]
-	MOV	V17.D[1], V17.D[0]
-	MOV	V18.D[1], V18.D[0]
-	MOV	V19.D[1], V19.D[0]
-	MOV	V20.D[1], V20.D[0]
-	MOV	V21.D[1], V21.D[0]
-	MOV	V22.D[1], V22.D[0]
-	MOV	V23.D[1], V23.D[0]
-.endm
-
 .macro first_roll_Xc_part1
 	SRI	V0.4S, V12.4S, #27
 	SRI	V1.4S, V16.4S, #19
@@ -241,7 +207,83 @@
 	EOR3	V27.16B, V20.16B, V4.16B, V5.16B
 	
 	MOV	V12.S[1], V16.S[0]
-	//do rest
+	MOV	V13.S[1], V17.S[0]
+	MOV	V14.S[1], V18.S[0]
+	MOV	V15.S[1], V19.S[0]
+	
+	MOV	V16.S[1], V20.S[0]
+	MOV	V17.S[1], V21.S[0]
+	MOV	V18.S[1], V22.S[0]
+	MOV	V19.S[1], V23.S[0]
+	
+	MOV	V20.S[1], V13.S[0]
+	MOV	V21.S[1], V14.S[0]
+	MOV	V22.S[1], V15.S[0]
+	MOV	V23.S[1], V25.S[0]
+	
+	MOV	V12.S[2], V20.S[0]
+	MOV	V13.S[2], V21.S[0]
+	MOV	V14.S[2], V22.S[0]
+	MOV	V15.S[2], V23.S[0]
+	
+	MOV	V16.S[2], V13.S[0]
+	MOV	V17.S[2], V14.S[0]
+	MOV	V18.S[2], V15.S[0]
+	MOV	V19.S[2], V25.S[0]
+	
+	MOV	V20.S[2], V17.S[0]
+	MOV	V21.S[2], V18.S[0]
+	MOV	V22.S[2], V19.S[0]
+	MOV	V23.S[2], V26.S[0]
+	
+	MOV	V12.S[3], V13.S[0]
+	MOV	V13.S[3], V14.S[0]
+	MOV	V14.S[3], V15.S[0]
+	MOV	V15.S[3], V25.S[0]
+	
+	MOV	V16.S[3], V17.S[0]
+	MOV	V17.S[3], V18.S[0]
+	MOV	V18.S[3], V19.S[0]
+	MOV	V19.S[3], V26.S[0]
+	
+	MOV	V20.S[3], V21.S[0]
+	MOV	V21.S[3], V22.S[0]
+	MOV	V22.S[3], V23.S[0]
+	MOV	V23.S[3], V27.S[0]
+.endm
+
+.macro first_storeK reg
+	ST1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	ST1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	ST1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
+.endm
+
+.macro first_loadK reg
+	LD1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
+	SUB	\reg\(), \reg\(), #128
+.endm
+
+.macro first_roll_Xc_part2
+	EOR	V0.16B,  V0.16B,  V12.16B
+	EOR	V1.16B,  V1.16B,  V12.16B
+	EOR	V2.16B,  V2.16B,  V12.16B
+	EOR	V3.16B,  V3.16B,  V12.16B
+	
+	EOR	V4.16B,  V4.16B,  V12.16B
+	EOR	V5.16B,  V5.16B,  V12.16B
+	EOR	V6.16B,  V6.16B,  V12.16B
+	EOR	V7.16B,  V7.16B,  V12.16B
+	
+	EOR	V8.16B,  V8.16B,  V12.16B
+	EOR	V9.16B,  V9.16B,  V12.16B
+	EOR	V10.16B, V10.16B, V12.16B
+	EOR	V11.16B, V11.16B, V12.16B
 .endm
 
 
@@ -263,27 +305,114 @@ Xoodootimes4_PermuteAll_6rounds:
 
 
 .align 8
-.global roll_Xc_first
-.type roll_Xc_first, %function
+.global roll_Xc_sha_first
+.type roll_Xc_sha_first, %function
 
-roll_Xc_first:
+roll_Xc_sha_first:
 
-	loadK x1
+	first_loadK x1
 
 	first_roll_Xc_part1
 	
 	load0 
 	
-	roll_Xc_part2
+	first_storeK x2
+	
+	first_roll_Xc_part2
 	
 	
 	RET
 	
 	
+	
+.macro loadK reg
+	LD1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
+	SUB	\reg\(), \reg\(), #128
+.endm
+
+.macro roll_Xc
+	SRI	V24.4S, V16.4S, #19
+	SRI	V25.4S, V20.4S, #29
+
+	SRI	V26.4S, V20.4S, #19
+	SRI	V27.4S, V12.4S, #29
+	
+	SRI	V28.4S, V12.4S, #19
+	SRI	V29.4S, V16.4S, #29
+	
+	SRI	V30.4S, V13.4S, #19
+	SRI	V31.4S, V17.4S, #29
+	
+	SRI	V24.4S, V16.4S, #13
+	SRI	V25.4S, V20.4S, #3
+	
+	SRI	V26.4S, V20.4S, #13
+	SRI	V27.4S, V12.4S, #3
+	
+	SRI	V28.4S, V12.4S, #13
+	SRI	V3.4S, V16.4S, #3
+	
+	SRI	V30.4S, V13.4S, #13
+	SRI	V31.4S, V17.4S, #3
+	
+	EOR3	V16.16B, V16.16B, V24.16B, V25.16B
+	EOR3	V20.16B, V20.16B, V26.16B, V27.16B
+	EOR3	V12.16B, V12.16B, V28.16B, V29.16B
+	EOR3	V13.16B, V13.16B, V30.16B, V31.16B
+	
+	EOR	V0.16B,  V0.16B,  V17.16B
+	EOR	V1.16B,  V1.16B,  V18.16B
+	EOR	V2.16B,  V2.16B,  V19.16B
+	EOR	V3.16B,  V3.16B,  V16.16B
+	
+	EOR	V4.16B,  V4.16B,  V21.16B
+	EOR	V5.16B,  V5.16B,  V22.16B
+	EOR	V6.16B,  V6.16B,  V23.16B
+	EOR	V7.16B,  V7.16B,  V20.16B
+	
+	EOR	V8.16B,  V8.16B,  V14.16B
+	EOR	V9.16B,  V9.16B,  V15.16B
+	EOR	V10.16B, V10.16B, V12.16B
+	EOR	V11.16B, V11.16B, V13.16B
+.endm
+
+.macro storeK
+	ST1	{V17.2D, V18.2D, V19.2D}, [x1]
+	ADD	x1, x1, #48
+	ST1	{V16.2D}, [x1]
+	ADD	x1, x1, #16
+	ST1	{V21.2D, V22.2D, V23.2D}, [x1]
+	ADD	x1, x1, #48
+	ST1	{V20.2D}, [x1]
+	ADD	x1, x1, #16
+	ST1	{V14.2D, V15.2D}, [x1]
+	ADD	x1, x1, #32
+	ST1	{V12.2D, V13.2D}, [x1]
+.endm
+
+	
+.align 8
+.global roll_Xc_sha
+.type roll_Xc_sha, %function
+
+roll_Xc_sha:
+
+	load0
+	/*
+	loadK x1
+
+	roll_Xc
+	
+	storeK*/
+	
+	Xoodoo
 
 
-
-
+	RET
 
 
 
