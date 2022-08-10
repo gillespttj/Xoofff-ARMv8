@@ -26,5 +26,7 @@ http://creativecommons.org/publicdomain/zero/1.0/
 #define Xoodootimes4_StaticInitialize()
 
 void Xoodootimes4_PermuteAll_6rounds(unsigned int *src, unsigned int *dest);
+void roll_Xc_first(unsigned int *src, unsigned int *k, unsigned int *work_mem);
+void roll_Xc(unsigned int *src, unsigned int *work_mem);
 
 #endif

@@ -6,33 +6,19 @@
 #include "Xoodoo_times4sha.h"
 #include "Xoodoo_times4no_sha.h"
 #include "Xoodoo_times4classic.h"
+#include "Xoodoo_times4decompose.h"
 #include "Xoodoo_times1.h"
 #include <math.h> //todelete
 #include <time.h>
 
-#define MAX_ROUNDS 10000000
-
-extern void Xoodootimes4_Load4Interlace(unsigned int *src);
-extern void Xoodootimes4_Store4Deinterlace(unsigned int *dest);
-extern void Xoodootimes4_SixRounds();
-
-extern void Xoodootimes4_PermuteAll_6rounds(unsigned int *src, unsigned int *dest);
-
-extern void Xoodootimes4_Load4InterlaceNoSha(unsigned int *src);
-extern void Xoodootimes4_SixRoundsNoSha();
-extern void Xoodootimes4_Store4DeinterlaceNoSha(unsigned int *dest);
-
-extern void Xoodootimes4_SixRoundsClassic(unsigned int *src, unsigned int *dest);
-
-
-extern void Xoodootimes1_SixRounds();
+#define MAX_ROUNDS 1000000
 
 		
 void SixXoodoos(unsigned int *src, unsigned int *dest)
 {
-	Xoodootimes4_Load4Interlace(src);
-	Xoodootimes4_SixRounds();
-	Xoodootimes4_Store4Deinterlace(dest);
+	//Xoodootimes4_Load4Interlace(src);
+	Xoodootimes4_SixRounds(src, dest);
+	//Xoodootimes4_Store4Deinterlace(dest);
 }
 
 void SixXoodoosNoSha(unsigned int *src, unsigned int *dest)
@@ -43,37 +29,26 @@ void SixXoodoosNoSha(unsigned int *src, unsigned int *dest)
 }
 
 
-void roll_xc();
-
-void roll_xe();
-
-//void 
-
 int main(int argc, char *argv[])
 {
 	if(argc==2)
 	{
-		int i = 0;
-		
 		float startTime, endTime;
+		int benchmark=0, decompose=0, Xoodoo4=0, Xoodoo4sha=0, Xoodoo4no_sha=0, Xoodoo4classic=0, 
+			Xoodoo1=0, Xoodoo1ref=0;
 		
-		//Xoodoo_Load4Interlace();
-		printf("This is a test\n");
-		/*unsigned long int p = 1;
-		unsigned long int s = 1;
-		unsigned long int rc_p[7];
-		unsigned long int rc_s[6];
-		for (int i=0; i<7; i++) {
-			rc_p[i] = 3;//p;
-			p = p ^ (p << 2);
-			if ((p & 16) != 0) p ^= 22;
-			if ((p &  8) != 0) p ^= 11;
+		for(int i=1; i<argc; i++)
+		{
+			if(strstr(argv[i], "benchmark")) benchmark = 1;
+			else if(strstr(argv[i], "decompose")) decompose = 1;
+			else if(strstr(argv[i], "Xoodoo4")) Xoodoo4 = 1;
+			else if(strstr(argv[i], "Xoodoo4sha")) Xoodoo4sha = 1;
+			else if(strstr(argv[i], "Xoodoo4no_sha")) Xoodoo4no_sha = 1;
+			else if(strstr(argv[i], "Xoodoo4classic")) Xoodoo4classic = 1;
+			else if(strstr(argv[i], "Xoodoo1")) Xoodoo1 = 1;
+			else if(strstr(argv[i], "Xoodoo1ref")) Xoodoo1ref = 1;
 		}
-		for (int i=0; i<6; i++) {
-			rc_s[i] = 2;//s;
-			s = (s * 5) % 7;
-		}*/
-
+		
 		
 		unsigned int* a = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 		//for (int i=0; i<4*12; i++) a[i] = i;// pow(2,16);
@@ -96,80 +71,140 @@ int main(int argc, char *argv[])
 		
 		unsigned int* b = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 		
-		/*
-		startTime = (float)clock()/CLOCKS_PER_SEC;
-		for(unsigned int i=0; i<MAX_ROUNDS; i++)
+		
+		
+		
+		if(benchmark)
 		{
-			Xoodoo_Permute_Nrounds((void*) b, 6);
-		}
-		endTime = (float)clock()/CLOCKS_PER_SEC;
-		
-		printf("Time spend for %d times 6 rounds of Xoodoo with reference implementation : %f \n",
-			MAX_ROUNDS, endTime-startTime);
-		
-		
-		startTime = (float)clock()/CLOCKS_PER_SEC;
-		for(unsigned int i=0; i<MAX_ROUNDS; i++)
-		{
-			SixXoodoos(a,b);
-		}
-		endTime = (float)clock()/CLOCKS_PER_SEC;
-		
-		printf("Time spend for %d times 6 rounds of Xoodoo with interleaving using SHA3 instructions : %f \n",
-			MAX_ROUNDS, endTime-startTime);
-		
-		
-		startTime = (float)clock()/CLOCKS_PER_SEC;
-		for(unsigned int i=0; i<MAX_ROUNDS; i++)
-		{
-			Xoodootimes4_PermuteAll_6rounds(a,b);
-		}
-		endTime = (float)clock()/CLOCKS_PER_SEC;
-		
-		printf("Time spend for %d times 6 rounds of Xoodoo without interleaving using SHA3 instructions : %f \n",
-			MAX_ROUNDS, endTime-startTime);
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				Xoodoo_Permute_Nrounds((void*) b, 6);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-		startTime = (float)clock()/CLOCKS_PER_SEC;
-		for(unsigned int i=0; i<MAX_ROUNDS; i++)
-		{
-			SixXoodoosNoSha(a,b);
-		}
-		endTime = (float)clock()/CLOCKS_PER_SEC;
-		
-		printf("Time spend for %d times 6 rounds of Xoodoo with interleaving without SHA3 instructions : %f \n",
-			MAX_ROUNDS, endTime-startTime);
+			printf("Time spend for %d times 6 rounds of Xoodoo with reference C implementation : %f \n",
+				MAX_ROUNDS, endTime-startTime);
 			
-		startTime = (float)clock()/CLOCKS_PER_SEC;
-		for(unsigned int i=0; i<MAX_ROUNDS; i++)
-		{
-			Xoodootimes4_SixRoundsClassic(a,b);
-		}
-		endTime = (float)clock()/CLOCKS_PER_SEC;
-		
-		printf("Time spend for %d times 6 rounds of Xoodoo without interleaving or SHA3 instructions : %f \n",
-			MAX_ROUNDS, endTime-startTime);
-		*/ 	
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				Xoodootimes1_PermuteAll_6rounds(a, b);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-		//SixXoodoos(a,b); //interleaved optimized
-		//Xoodootimes4_PermuteAll_6rounds(a, b); //no interleaving but sha
-		//SixXoodoosNoSha(a,b); //interleaved but without sha instructions
-		//Xoodootimes4_SixRoundsClassic(a,b); // no interleaving, no sha instructions, but SIMD
+			printf("Time spend for %d times 6 rounds of Xoodoo with optimized implementation : %f \n",
+				MAX_ROUNDS, endTime-startTime);
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				SixXoodoos(a,b);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			
+			printf("Time spend for %d times 6 rounds of 4 Xoodoos with interleaving using SHA3 instructions : %f \n",
+				MAX_ROUNDS, endTime-startTime);
+			
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				Xoodootimes4_PermuteAll_6rounds(a,b);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			
+			printf("Time spend for %d times 6 rounds of 4 Xoodoos without interleaving using SHA3 instructions : %f \n",
+				MAX_ROUNDS, endTime-startTime);
+				
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				SixXoodoosNoSha(a,b);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			
+			printf("Time spend for %d times 6 rounds of 4 Xoodoos with interleaving without SHA3 instructions : %f \n",
+				MAX_ROUNDS, endTime-startTime);
+				
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				Xoodootimes4_SixRoundsClassic(a,b);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			
+			printf("Time spend for %d times 6 rounds of 4 Xoodoos without interleaving or SHA3 instructions : %f \n",
+				MAX_ROUNDS, endTime-startTime);
+		}	
 		
-		Xoodootimes1_PermuteAll_6rounds(a, b); //base implementation single Xoodoo
 		
-		//memcpy(b, a, 4*12*sizeof(unsigned int));
-		//Xoodoo_Permute_Nrounds((void*) b, 6); //ref
+		
+		if(decompose)
+		{
+			printf("Sub-timings for %d rounds of 4 Xoodoos with sha3 interlaced implementation:\n", MAX_ROUNDS);
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+				Xoodootimes4_Load(a);
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			printf("Loading: %f \n", endTime-startTime);
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+				Xoodootimes4_Interlace();
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			printf("Interlacing: %f \n", endTime-startTime);
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+				//Xoodootimes4_SixRounds_old();
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			printf("Execution: %f \n", endTime-startTime);
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+				Xoodootimes4_Deinterlace();
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			printf("De-interlacing: %f \n", endTime-startTime);
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+				Xoodootimes4_Store(b);
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			printf("Storing: %f \n", endTime-startTime);
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+				nothing();
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			printf("Nothing (reference): %f \n", endTime-startTime);
+		}
+		
+			
+		if (Xoodoo4) SixXoodoos(a,b); //interleaved optimized
+		if (Xoodoo4sha) Xoodootimes4_PermuteAll_6rounds(a, b); //no interleaving but sha
+		if (Xoodoo4no_sha) SixXoodoosNoSha(a,b); //interleaved but without sha instructions
+		if (Xoodoo4classic) Xoodootimes4_SixRoundsClassic(a,b); // no interleaving, no sha instructions, but SIMD
+		
+		if (Xoodoo1) Xoodootimes1_PermuteAll_6rounds(a, b); //base implementation single Xoodoo
+		
+		if (Xoodoo1ref){
+			memcpy(b, a, 4*12*sizeof(unsigned int));
+			Xoodoo_Permute_Nrounds((void*) b, 6); //ref
+		}
 		
 		
 		// Result
-		for (int i=0; i<12; i++){
-			printf("%x %x:%x-%x:%x\n", i, b[4*i], b[4*i+1], b[4*i+2], b[4*i+3]);
+		if (Xoodoo4 || Xoodoo4sha || Xoodoo4no_sha || Xoodoo4classic || Xoodoo1 || Xoodoo1ref){ 
+			for (int i=0; i<12; i++){
+				printf("%x %x:%x-%x:%x\n", i, b[4*i], b[4*i+1], b[4*i+2], b[4*i+3]);
+			}
 		}
 		
 		
 		free(a);
 		free(b);
-		//free(c);
 		
 	}
 	else
