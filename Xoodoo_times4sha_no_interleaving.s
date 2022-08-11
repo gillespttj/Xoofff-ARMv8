@@ -288,10 +288,10 @@
 
 
 .align 8
-.global Xoodootimes4_PermuteAll_6rounds
-.type Xoodootimes4_PermuteAll_6rounds, %function
+.global Xoodootimes4sha_no_interleaving_6rounds
+.type Xoodootimes4sha_no_interleaving_6rounds, %function
 
-Xoodootimes4_PermuteAll_6rounds:
+Xoodootimes4sha_no_interleaving_6rounds:
 
 	load0
 
@@ -402,12 +402,12 @@ roll_Xc_sha_first:
 roll_Xc_sha:
 
 	load0
-	/*
+	
 	loadK x1
 
 	roll_Xc
 	
-	storeK*/
+	storeK
 	
 	Xoodoo
 

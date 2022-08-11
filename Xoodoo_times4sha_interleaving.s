@@ -145,6 +145,10 @@
 .endm
 
 
+
+
+
+
 .macro load4interleave reg
 
 	# Load data to regs
@@ -174,7 +178,7 @@
 
 .endm
 
-.macro load1interleave reg
+.macro load1copy4 reg
 
 	# Load data to regs
 	LD4	{V0.S, V1.S, V2.S, V3.S}[0], [\reg]
@@ -480,18 +484,6 @@
 
 
 
-
-
-	
-
-
-
-
-
-
-
-
-
 	
 .macro deinterleave_store reg
 	
@@ -785,34 +777,28 @@
 	
 .endm
 
+.global Xoodootimes4sha_interleaving_6rounds
+.type Xoodootimes4sha_interleaving_6rounds,%function
 
-.macro store4 reg
-	ST4	{V0.S, V1.S, V2.S, V3.S}[0], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V4.S, V5.S, V6.S, V7.S}[0], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V8.S, V9.S, V10.S, V11.S}[0], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V0.S, V1.S, V2.S, V3.S}[1], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V4.S, V5.S, V6.S, V7.S}[1], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V8.S, V9.S, V10.S, V11.S}[1], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V0.S, V1.S, V2.S, V3.S}[2], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V4.S, V5.S, V6.S, V7.S}[2], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V8.S, V9.S, V10.S, V11.S}[2], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V0.S, V1.S, V2.S, V3.S}[3], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V4.S, V5.S, V6.S, V7.S}[3], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V8.S, V9.S, V10.S, V11.S}[3], [\reg]
-	SUB	\reg, \reg, #176
-.endm
+Xoodootimes4sha_interleaving_6rounds:
+	
+	load4interleave x0
+	interleave
+	
+	MOVI	V24.4S,  #0x00
+	Xoodoo
 
+	deinterleave_store x1
+
+	RET
+	
+	
+	
+	
+	
+	
+	
+	
 .macro load4 reg
 	LD4	{V0.S, V1.S, V2.S, V3.S}[0], [\reg]
 	ADD	\reg, \reg, #16
@@ -840,32 +826,6 @@
 	SUB	\reg, \reg, #176
 .endm
 
-.macro store4_12 reg
-	ST4	{V12.S, V13.S, V14.S, V15.S}[0], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V16.S, V17.S, V18.S, V19.S}[0], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V20.S, V21.S, V22.S, V23.S}[0], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V12.S, V13.S, V14.S, V15.S}[1], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V16.S, V17.S, V18.S, V19.S}[1], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V20.S, V21.S, V22.S, V23.S}[1], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V12.S, V13.S, V14.S, V15.S}[2], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V16.S, V17.S, V18.S, V19.S}[2], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V20.S, V21.S, V22.S, V23.S}[2], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V12.S, V13.S, V14.S, V15.S}[3], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V16.S, V17.S, V18.S, V19.S}[3], [\reg]
-	ADD	\reg, \reg, #16
-	ST4	{V20.S, V21.S, V22.S, V23.S}[3], [\reg]
-	SUB	\reg, \reg, #176
-.endm
 
 .macro load4_12 reg
 	LD4	{V12.S, V13.S, V14.S, V15.S}[0], [\reg]
@@ -893,25 +853,35 @@
 	LD4	{V20.S, V21.S, V22.S, V23.S}[3], [\reg]
 	SUB	\reg, \reg, #176
 .endm
+	
+.macro store4 reg
+	ST4	{V0.S, V1.S, V2.S, V3.S}[0], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V4.S, V5.S, V6.S, V7.S}[0], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V8.S, V9.S, V10.S, V11.S}[0], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V0.S, V1.S, V2.S, V3.S}[1], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V4.S, V5.S, V6.S, V7.S}[1], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V8.S, V9.S, V10.S, V11.S}[1], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V0.S, V1.S, V2.S, V3.S}[2], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V4.S, V5.S, V6.S, V7.S}[2], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V8.S, V9.S, V10.S, V11.S}[2], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V0.S, V1.S, V2.S, V3.S}[3], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V4.S, V5.S, V6.S, V7.S}[3], [\reg]
+	ADD	\reg, \reg, #16
+	ST4	{V8.S, V9.S, V10.S, V11.S}[3], [\reg]
+	SUB	\reg, \reg, #176
+.endm
 
 
-.global Xoodootimes4_SixRounds
-.type Xoodootimes4_SixRounds,%function
-
-Xoodootimes4_SixRounds:
-	
-	load4interleave x0
-	interleave
-	
-	MOVI	V24.4S,  #0x00
-	Xoodoo
-
-	deinterleave_store x1
-
-	RET
-	
-	
-	
 
 .macro roll_mix A, B, C, D, dest, work1, work2
 	AND	\work1\().16B,	\A\().16B, V25.16B
@@ -1100,7 +1070,7 @@ Xoodootimes4_SixRounds:
 roll_Xc_first:
 	MOVI	V24.4S,  #0x00
 	
-	load1interleave x1
+	load1copy4 x1
 	store4 x2
 	
 	load4interleave x0
@@ -1118,10 +1088,10 @@ roll_Xc_first:
 roll_Xc:
 	
 	load4interleave x0
-	/*
+	
 	load1by1 x1
 	roll_Xc_second
-	store1by1 */
+	store1by1 
 	
 	Xoodoo
 	

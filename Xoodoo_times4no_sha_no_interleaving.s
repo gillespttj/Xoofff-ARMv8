@@ -135,10 +135,10 @@
 
 .align  16
     
-.global Xoodootimes4_SixRoundsClassic
-.type Xoodootimes4_SixRoundsClassic,%function
+.global Xoodootimes4no_sha_no_interleaving_6rounds
+.type Xoodootimes4no_sha_no_interleaving_6rounds,%function
 
-Xoodootimes4_SixRoundsClassic:
+Xoodootimes4no_sha_no_interleaving_6rounds:
 
     LD4     {V0.S, V1.S, V2.S, V3.S}[0], [x0]
     ADD     x0, x0, #16

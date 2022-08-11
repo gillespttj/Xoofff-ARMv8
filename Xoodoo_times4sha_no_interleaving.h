@@ -14,8 +14,8 @@ and related or neighboring rights to the source code in this file.
 http://creativecommons.org/publicdomain/zero/1.0/
 */
 
-#ifndef _Xoodoo_times4sha_h_
-#define _Xoodoo_times4sha_h_
+#ifndef _Xoodoo_times4sha_no_interleaving_h_
+#define _Xoodoo_times4sha_no_interleaving_h_
 
 /** For the documentation, see PlSnP-documentation.h. */
 
@@ -25,7 +25,7 @@ http://creativecommons.org/publicdomain/zero/1.0/
 
 #define Xoodootimes4_StaticInitialize()
 
-void Xoodootimes4_PermuteAll_6rounds(unsigned int *src, unsigned int *dest);
+void Xoodootimes4sha_no_interleaving_6rounds(unsigned int *src, unsigned int *dest);
 void roll_Xc_sha_first(unsigned int *src, unsigned int *k, unsigned int *work_mem); //might still be optimized with normal regs
 void roll_Xc_sha(unsigned int *src, unsigned int *work_mem);
 
