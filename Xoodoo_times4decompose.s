@@ -434,10 +434,10 @@ Xoodootimes4_SixRounds:
 
 
     
-.global Xoodootimes4_Deinterlace
-.type Xoodootimes4_Deinterlace,%function
+.global Xoodootimes4_Deinterleave
+.type Xoodootimes4_Deinterleave,%function
 
-Xoodootimes4_Deinterlace:
+Xoodootimes4_Deinterleave:
     
     # Swap 1 bit
     MOVI    V26.8H,  #0x22

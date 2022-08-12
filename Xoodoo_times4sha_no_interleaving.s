@@ -260,7 +260,8 @@
 	ST1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
 .endm
 
-.macro first_loadK reg
+	
+.macro loadK reg
 	LD1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
 	ADD	\reg\(), \reg\(), #64
 	LD1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
@@ -310,7 +311,7 @@ Xoodootimes4sha_no_interleaving_6rounds:
 
 roll_Xc_sha_first:
 
-	first_loadK x1
+	loadK x1
 
 	first_roll_Xc_part1
 	
@@ -324,15 +325,7 @@ roll_Xc_sha_first:
 	RET
 	
 	
-	
-.macro loadK reg
-	LD1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
-	ADD	\reg\(), \reg\(), #64
-	LD1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
-	ADD	\reg\(), \reg\(), #64
-	LD1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
-	SUB	\reg\(), \reg\(), #128
-.endm
+
 
 .macro roll_Xc
 	SRI	V24.4S, V16.4S, #19

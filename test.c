@@ -35,7 +35,29 @@ int main(int argc, char *argv[])
 			else if(strcmp(argv[1], "Xoodoo1") == 0) xoodoo1 = 1;
 			else if(strcmp(argv[1], "Xoodoo1ref") == 0) xoodoo1ref = 1;
 			else if(strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) help = 1;
-			else printf("Wrong argument\n");
+			else printf("Wrong argument, type %s -h help.\n", argv[0]);
+		}
+		
+		if(help)
+		{
+			printf("The %s tool allows testing and performance evalutation for mutiple implementations of Xoofff on an ARMv8 platform.\n", argv[0]);
+			printf("\n");
+			printf("Options can only be used one by one. For example: \"%s benchmark\"\n", argv[0]);
+			printf("The different available options are: \n");
+			printf("- benchmark: will run a timed benchmark of each Xoodoo implementation\n");
+			printf("- decompose: will run a timed benchmark of a Xoodoo implementation using SIMD, SHA3 instructions and bit interleaving\n");
+			printf("- roll_benchmark: will run a timed benchmark of a the rolling function Xc, followed by loading (and interleaving) of the input, and finally 6 rounds of Xoodoo on the XOR of the rolled key and the input. This compares one implemenation using interleaving to another one without interleaving\n");
+			printf("- Xoodoo1ref: runs 6 rounds of Xoodoo using a reference C implementation (without SIMD)\n");
+			printf("- Xoodoo1: runs 6 rounds of Xoodoo without using SIMD instrucitons\n");
+			printf("- Xoodoo4si: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, SHA3 instructions and bit Interleaving\n");
+			printf("- Xoodoo4sn: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, SHA3 instructions but NO bit interleaving\n");
+			printf("- Xoodoo4ni: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, NO SHA3 instructions but bit Interleaving\n");
+			printf("- Xoodoo4nn: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, NO SHA3 instructions and NO bit Interleaving\n");
+			printf("- -h or --help: returns this help text\n");
+			printf("\n");
+			printf("The single use Xoodoo options (Xoodoo1 and Xoodoo4xx) take as input a hardcoded message and key and output the result to the terminal.\n");
+			printf("\n");
+			printf("Please note that this code is only used for internal testing and might encounter some issues. For any questions please contact Gilles Petitjean: gilles.petitjean@gmail.com .\n");
 		}
 		
 		
@@ -137,7 +159,7 @@ int main(int argc, char *argv[])
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-			printf("Time spend for %d rolls + 6 rounds of Xoodoo with interlacing : %f \n",
+			printf("Time spend for %d rolls + 6 rounds of Xoodoo with interleaving : %f \n",
 				MAX_ROUNDS, endTime-startTime);
 			
 			startTime = (float)clock()/CLOCKS_PER_SEC;
@@ -147,15 +169,17 @@ int main(int argc, char *argv[])
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-			printf("Time spend for %d rolls + 6 rounds of Xoodoo without interlacing : %f \n",
+			printf("Time spend for %d rolls + 6 rounds of Xoodoo without interleaving : %f \n",
 				MAX_ROUNDS, endTime-startTime);
+			
+			free(c);
 		}
 		
 		
 		
 		if(decompose)
 		{
-			printf("Sub-timings for %d rounds of 4 Xoodoos with sha3 interlaced implementation:\n", MAX_ROUNDS);
+			printf("Sub-timings for %d rounds of 4 Xoodoos with sha3 interleaved implementation:\n", MAX_ROUNDS);
 			
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
@@ -177,9 +201,9 @@ int main(int argc, char *argv[])
 			
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
-				Xoodootimes4_Deinterlace();
+				Xoodootimes4_Deinterleave();
 			endTime = (float)clock()/CLOCKS_PER_SEC;
-			printf("De-interlacing: %f \n", endTime-startTime);
+			printf("De-interleaving: %f \n", endTime-startTime);
 			
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
@@ -220,10 +244,9 @@ int main(int argc, char *argv[])
 		free(b);
 		
 	}
-	else
-	{
-		printf("argument error\n");
-	}
+	
+	else printf("Wrong argument, type %s -h help.\n", argv[0]);
+	
 	return 0;
 
 }
