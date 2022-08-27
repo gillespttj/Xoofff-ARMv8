@@ -122,30 +122,56 @@
 	LD4	{V8.S, V9.S, V10.S, V11.S}[3], [x0]
 .endm
 
-.macro store0
-	ST4	{V0.S, V1.S, V2.S, V3.S}[0], [x1]
-	ADD	x1, x1, #16
-	ST4	{V4.S, V5.S, V6.S, V7.S}[0], [x1]
-	ADD	x1, x1, #16
-	ST4	{V8.S, V9.S, V10.S, V11.S}[0], [x1]
-	ADD	x1, x1, #16
-	ST4	{V0.S, V1.S, V2.S, V3.S}[1], [x1]
-	ADD	x1, x1, #16
-	ST4	{V4.S, V5.S, V6.S, V7.S}[1], [x1]
-	ADD	x1, x1, #16
-	ST4	{V8.S, V9.S, V10.S, V11.S}[1], [x1]
-	ADD	x1, x1, #16
-	ST4	{V0.S, V1.S, V2.S, V3.S}[2], [x1]
-	ADD	x1, x1, #16
-	ST4	{V4.S, V5.S, V6.S, V7.S}[2], [x1]
-	ADD	x1, x1, #16
-	ST4	{V8.S, V9.S, V10.S, V11.S}[2], [x1]
-	ADD	x1, x1, #16
-	ST4	{V0.S, V1.S, V2.S, V3.S}[3], [x1]
-	ADD	x1, x1, #16
-	ST4	{V4.S, V5.S, V6.S, V7.S}[3], [x1]
-	ADD	x1, x1, #16
-	ST4	{V8.S, V9.S, V10.S, V11.S}[3], [x1]
+.macro store0 reg
+	ST4	{V0.S, V1.S, V2.S, V3.S}[0], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V4.S, V5.S, V6.S, V7.S}[0], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V8.S, V9.S, V10.S, V11.S}[0], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V0.S, V1.S, V2.S, V3.S}[1], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V4.S, V5.S, V6.S, V7.S}[1], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V8.S, V9.S, V10.S, V11.S}[1], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V0.S, V1.S, V2.S, V3.S}[2], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V4.S, V5.S, V6.S, V7.S}[2], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V8.S, V9.S, V10.S, V11.S}[2], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V0.S, V1.S, V2.S, V3.S}[3], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V4.S, V5.S, V6.S, V7.S}[3], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V8.S, V9.S, V10.S, V11.S}[3], [\reg]
+.endm
+
+.macro store12 reg	
+	ST4	{V12.S, V13.S, V14.S, V15.S}[0], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V16.S, V17.S, V18.S, V19.S}[0], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V20.S, V21.S, V22.S, V23.S}[0], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V12.S, V13.S, V14.S, V15.S}[1], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V16.S, V17.S, V18.S, V19.S}[1], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V20.S, V21.S, V22.S, V23.S}[1], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V12.S, V13.S, V14.S, V15.S}[2], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V16.S, V17.S, V18.S, V19.S}[2], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V20.S, V21.S, V22.S, V23.S}[2], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V12.S, V13.S, V14.S, V15.S}[3], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V16.S, V17.S, V18.S, V19.S}[3], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V20.S, V21.S, V22.S, V23.S}[3], [\reg]
 .endm
 
 .macro Xoodoo
@@ -187,7 +213,7 @@
 	rho_e
 .endm
 
-.macro first_roll_Xc_part1
+.macro first_roll_Xc_part1/*
 	SRI	V0.4S, V12.4S, #27
 	SRI	V1.4S, V16.4S, #19
 	SRI	V2.4S, V16.4S, #27
@@ -200,7 +226,21 @@
 	SLI	V2.4S, V16.4S, #5
 	SLI	V3.4S, V20.4S, #13
 	SLI	V4.4S, V20.4S, #5
-	SLI	V5.4S, V13.4S, #13
+	SLI	V5.4S, V13.4S, #13*/
+	
+	SRI	V0.4S, V12.4S, #19
+	SRI	V1.4S, V16.4S, #29
+	SRI	V2.4S, V16.4S, #19
+	SRI	V3.4S, V20.4S, #29
+	SRI	V4.4S, V20.4S, #19
+	SRI	V5.4S, V13.4S, #29
+	
+	SLI	V0.4S, V12.4S, #13
+	SLI	V1.4S, V16.4S, #3
+	SLI	V2.4S, V16.4S, #13
+	SLI	V3.4S, V20.4S, #3
+	SLI	V4.4S, V20.4S, #13
+	SLI	V5.4S, V13.4S, #3
 	
 	EOR3	V25.16B, V12.16B, V0.16B, V1.16B
 	EOR3	V26.16B, V16.16B, V2.16B, V3.16B
@@ -252,39 +292,67 @@
 	MOV	V23.S[3], V27.S[0]
 .endm
 
-.macro first_storeK reg
-	ST1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
-	ADD	\reg\(), \reg\(), #64
-	ST1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
-	ADD	\reg\(), \reg\(), #64
-	ST1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
+.macro first_storeK place, reg
+	ST4	{V12.S, V13.S, V14.S, V15.S}[\place], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V16.S, V17.S, V18.S, V19.S}[\place], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST4	{V20.S, V21.S, V22.S, V23.S}[\place], [\reg]
+	ADD	\reg\(), \reg\(), #16
+.endm
+
+.macro first_storeK_full reg
+	first_storeK	0, \reg
+	first_storeK	1, \reg
+	first_storeK	2, \reg
+	first_storeK	3, \reg
 .endm
 
 	
-.macro loadK reg
-	LD1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
-	ADD	\reg\(), \reg\(), #64
-	LD1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
-	ADD	\reg\(), \reg\(), #64
-	LD1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
-	SUB	\reg\(), \reg\(), #128
+.macro loadK place, reg
+	LD4	{V12.S, V13.S, V14.S, V15.S}[\place], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	LD4	{V16.S, V17.S, V18.S, V19.S}[\place], [\reg]
+	ADD	\reg\(), \reg\(), #16
+	LD4	{V20.S, V21.S, V22.S, V23.S}[\place], [\reg]
+.endm
+
+.macro loadKfull reg
+	loadK	0, \reg
+	ADD	\reg\(), \reg\(), #16
+	loadK	1, \reg
+	ADD	\reg\(), \reg\(), #16
+	loadK	2, \reg
+	ADD	\reg\(), \reg\(), #16
+	loadK	3, \reg
+	SUB	\reg\(), \reg\(), #176
+.endm
+
+.macro first_loadKfull reg
+	loadK	0, \reg
+	SUB	\reg\(), \reg\(), #32
+	loadK	1, \reg
+	SUB	\reg\(), \reg\(), #32
+	loadK	2, \reg
+	SUB	\reg\(), \reg\(), #32
+	loadK	3, \reg
 .endm
 
 .macro first_roll_Xc_part2
 	EOR	V0.16B,  V0.16B,  V12.16B
-	EOR	V1.16B,  V1.16B,  V12.16B
-	EOR	V2.16B,  V2.16B,  V12.16B
-	EOR	V3.16B,  V3.16B,  V12.16B
+	EOR	V1.16B,  V1.16B,  V13.16B
+	EOR	V2.16B,  V2.16B,  V14.16B
+	EOR	V3.16B,  V3.16B,  V15.16B
 	
-	EOR	V4.16B,  V4.16B,  V12.16B
-	EOR	V5.16B,  V5.16B,  V12.16B
-	EOR	V6.16B,  V6.16B,  V12.16B
-	EOR	V7.16B,  V7.16B,  V12.16B
+	EOR	V4.16B,  V4.16B,  V16.16B
+	EOR	V5.16B,  V5.16B,  V17.16B
+	EOR	V6.16B,  V6.16B,  V18.16B
+	EOR	V7.16B,  V7.16B,  V19.16B
 	
-	EOR	V8.16B,  V8.16B,  V12.16B
-	EOR	V9.16B,  V9.16B,  V12.16B
-	EOR	V10.16B, V10.16B, V12.16B
-	EOR	V11.16B, V11.16B, V12.16B
+	EOR	V8.16B,  V8.16B,  V20.16B
+	EOR	V9.16B,  V9.16B,  V21.16B
+	EOR	V10.16B, V10.16B, V22.16B
+	EOR	V11.16B, V11.16B, V23.16B
 .endm
 
 
@@ -298,7 +366,7 @@ Xoodootimes4sha_no_interleaving_6rounds:
 
 	Xoodoo
 
-	store0
+	store0 x1
 
 	RET
 
@@ -311,16 +379,17 @@ Xoodootimes4sha_no_interleaving_6rounds:
 
 roll_Xc_sha_first:
 
-	loadK x1
+	first_loadKfull x1
 
 	first_roll_Xc_part1
 	
 	load0 
 	
-	first_storeK x2
+	first_storeK_full x2
 	
 	first_roll_Xc_part2
 	
+	Xoodoo
 	
 	RET
 	
@@ -332,7 +401,7 @@ roll_Xc_sha_first:
 	SRI	V25.4S, V20.4S, #29
 
 	SRI	V26.4S, V20.4S, #19
-	SRI	V27.4S, V12.4S, #29
+	SRI	V27.4S, V13.4S, #29
 	
 	SRI	V28.4S, V12.4S, #19
 	SRI	V29.4S, V16.4S, #29
@@ -340,17 +409,17 @@ roll_Xc_sha_first:
 	SRI	V30.4S, V13.4S, #19
 	SRI	V31.4S, V17.4S, #29
 	
-	SRI	V24.4S, V16.4S, #13
-	SRI	V25.4S, V20.4S, #3
+	SLI	V24.4S, V16.4S, #13
+	SLI	V25.4S, V20.4S, #3
 	
-	SRI	V26.4S, V20.4S, #13
-	SRI	V27.4S, V12.4S, #3
+	SLI	V26.4S, V20.4S, #13
+	SLI	V27.4S, V13.4S, #3
 	
-	SRI	V28.4S, V12.4S, #13
-	SRI	V3.4S, V16.4S, #3
+	SLI	V28.4S, V12.4S, #13
+	SLI	V29.4S, V16.4S, #3
 	
-	SRI	V30.4S, V13.4S, #13
-	SRI	V31.4S, V17.4S, #3
+	SLI	V30.4S, V13.4S, #13
+	SLI	V31.4S, V17.4S, #3
 	
 	EOR3	V16.16B, V16.16B, V24.16B, V25.16B
 	EOR3	V20.16B, V20.16B, V26.16B, V27.16B
@@ -373,18 +442,29 @@ roll_Xc_sha_first:
 	EOR	V11.16B, V11.16B, V13.16B
 .endm
 
-.macro storeK
-	ST1	{V17.2D, V18.2D, V19.2D}, [x1]
-	ADD	x1, x1, #48
-	ST1	{V16.2D}, [x1]
-	ADD	x1, x1, #16
-	ST1	{V21.2D, V22.2D, V23.2D}, [x1]
-	ADD	x1, x1, #48
-	ST1	{V20.2D}, [x1]
-	ADD	x1, x1, #16
-	ST1	{V14.2D, V15.2D}, [x1]
-	ADD	x1, x1, #32
-	ST1	{V12.2D, V13.2D}, [x1]
+
+.macro storeK place 
+	ST3	{V17.S, V18.S, V19.S}[\place], [x1]
+	ADD	x1, x1, #12
+	ST1	{V16.S}[\place], [x1]
+	ADD	x1, x1, #4
+	ST3	{V21.S, V22.S, V23.S}[\place], [x1]
+	ADD	x1, x1, #12
+	ST1	{V20.S}[\place], [x1]
+	ADD	x1, x1, #4
+	ST2	{V14.S, V15.S}[\place], [x1]
+	ADD	x1, x1, #8
+	ST2	{V12.S, V13.S}[\place], [x1]
+.endm
+
+.macro storeKfull 
+	storeK	0
+	ADD	x1, x1, #8
+	storeK	1
+	ADD	x1, x1, #8
+	storeK	2
+	ADD	x1, x1, #8
+	storeK	3
 .endm
 
 	
@@ -396,16 +476,34 @@ roll_Xc_sha:
 
 	load0
 	
-	loadK x1
+	loadKfull	x1
 
 	roll_Xc
 	
-	storeK
+	storeKfull
 	
 	Xoodoo
 
 
 	RET
+	
+	
+	
+	
+.align 8
+.global store_sha
+.type store_sha, %function
+
+store_sha:
+
+	//store12 x0
+
+	store0	x0
+	
+	RET
+	
+	
+	
 
 
 

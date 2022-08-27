@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	{
 		float startTime, endTime;
 		int benchmark=0, decompose=0, xoodoo4sha_interleave=0, xoodoo4sha_no_interleave=0, xoodoo4no_sha_interleave=0,
-			xoodoo4no_sha_no_interleave=0, xoodoo1=0, xoodoo1ref=0, roll_benchmark=0, help=0;
+			xoodoo4no_sha_no_interleave=0, xoodoo1=0, xoodoo1ref=0, rollCi=0, rollCn=0, roll_benchmark=0, help=0;
 		
 		for(int i=1; i<argc; i++)
 		{
@@ -34,37 +34,21 @@ int main(int argc, char *argv[])
 			else if(strcmp(argv[1], "Xoodoo4nn") == 0) xoodoo4no_sha_no_interleave = 1;
 			else if(strcmp(argv[1], "Xoodoo1") == 0) xoodoo1 = 1;
 			else if(strcmp(argv[1], "Xoodoo1ref") == 0) xoodoo1ref = 1;
+			else if(strcmp(argv[1], "rollCi") == 0) rollCi = 1;
+			else if(strcmp(argv[1], "rollCn") == 0) rollCn = 1;
 			else if(strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) help = 1;
 			else printf("Wrong argument, type %s -h help.\n", argv[0]);
 		}
 		
-		if(help)
-		{
-			printf("The %s tool allows testing and performance evalutation for mutiple implementations of Xoofff on an ARMv8 platform.\n", argv[0]);
-			printf("\n");
-			printf("Options can only be used one by one. For example: \"%s benchmark\"\n", argv[0]);
-			printf("The different available options are: \n");
-			printf("- benchmark: will run a timed benchmark of each Xoodoo implementation\n");
-			printf("- decompose: will run a timed benchmark of a Xoodoo implementation using SIMD, SHA3 instructions and bit interleaving\n");
-			printf("- roll_benchmark: will run a timed benchmark of a the rolling function Xc, followed by loading (and interleaving) of the input, and finally 6 rounds of Xoodoo on the XOR of the rolled key and the input. This compares one implemenation using interleaving to another one without interleaving\n");
-			printf("- Xoodoo1ref: runs 6 rounds of Xoodoo using a reference C implementation (without SIMD)\n");
-			printf("- Xoodoo1: runs 6 rounds of Xoodoo without using SIMD instrucitons\n");
-			printf("- Xoodoo4si: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, SHA3 instructions and bit Interleaving\n");
-			printf("- Xoodoo4sn: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, SHA3 instructions but NO bit interleaving\n");
-			printf("- Xoodoo4ni: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, NO SHA3 instructions but bit Interleaving\n");
-			printf("- Xoodoo4nn: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, NO SHA3 instructions and NO bit Interleaving\n");
-			printf("- -h or --help: returns this help text\n");
-			printf("\n");
-			printf("The single use Xoodoo options (Xoodoo1 and Xoodoo4xx) take as input a hardcoded message and key and output the result to the terminal.\n");
-			printf("\n");
-			printf("Please note that this code is only used for internal testing and might encounter some issues. For any questions please contact Gilles Petitjean: gilles.petitjean@gmail.com .\n");
-		}
 		
 		
 		unsigned int* a = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 		//for (int i=0; i<4*12; i++) a[i] = i;// pow(2,16);
-		for (int i=0; i<12; i++) a[i] = i;
-		//a[0] = 1;// pow(2,17);
+		//for (int i=0; i<12; i++) a[i] = i;
+		
+		for (int j=0; j<4; j++){
+			//for (int i=0; i<12; i++) a[12*j+i] = i;
+		}
 		
 		/*a[0] = 0x1;
 		a[1] = 0x0;
@@ -82,7 +66,9 @@ int main(int argc, char *argv[])
 		
 		unsigned int* b = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 		
+		unsigned int* k = (unsigned int*) malloc(12*sizeof(unsigned int));
 		
+		for (int i=0; i<12; i++) k[i] = i;
 		
 		
 		if(benchmark)
@@ -231,17 +217,67 @@ int main(int argc, char *argv[])
 			Xoodoo_Permute_Nrounds((void*) b, 6); //ref
 		}
 		
+		if (rollCi){
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			roll_Xc_first(a, k, c);
+			roll_Xc(a, c);
+			store(b);
+			
+			for (int i=0; i<12; i++){
+				//printf("c %d | %x:%x-%x:%x\n", i, c[4*i], c[4*i+1], c[4*i+2], c[4*i+3]);
+			}
+			free(c);
+		}
+		
+		if (rollCn){
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			roll_Xc_sha_first(a, k, c);
+			roll_Xc_sha(a, c);
+			store_sha(b);
+			
+			for (int i=0; i<12; i++){
+				printf("c %d | %x:%x-%x:%x\n", i, c[4*i], c[4*i+1], c[4*i+2], c[4*i+3]);
+			}
+			free(c);
+		}
+		
 		
 		// Result
-		if (xoodoo4sha_interleave || xoodoo4sha_no_interleave || xoodoo4no_sha_interleave || xoodoo4no_sha_no_interleave || xoodoo1 || xoodoo1ref){ 
+		if (xoodoo4sha_interleave || xoodoo4sha_no_interleave || xoodoo4no_sha_interleave || xoodoo4no_sha_no_interleave || xoodoo1 || xoodoo1ref || rollCi || rollCn){ 
 			for (int i=0; i<12; i++){
-				printf("%x %x:%x-%x:%x\n", i, b[4*i], b[4*i+1], b[4*i+2], b[4*i+3]);
+				printf("%d | %x:%x-%x:%x\n", i, b[4*i], b[4*i+1], b[4*i+2], b[4*i+3]);
 			}
 		}
 		
 		
 		free(a);
 		free(b);
+		
+		
+		
+		if(help)
+		{
+			printf("The %s tool allows testing and performance evalutation for mutiple implementations of Xoofff on an ARMv8 platform.\n", argv[0]);
+			printf("\n");
+			printf("Options can only be used one by one. For example: \"%s benchmark\"\n", argv[0]);
+			printf("The different available options are: \n");
+			printf("- benchmark: will run a timed benchmark of each Xoodoo implementation\n");
+			printf("- decompose: will run a timed benchmark of a Xoodoo implementation using SIMD, SHA3 instructions and bit interleaving\n");
+			printf("- roll_benchmark: will run a timed benchmark of a the rolling function Xc, followed by loading (and interleaving) of the input, and finally 6 rounds of Xoodoo on the XOR of the rolled key and the input. This compares one implemenation using interleaving to another one without interleaving\n");
+			printf("- Xoodoo1ref: runs 6 rounds of Xoodoo using a reference C implementation (without SIMD)\n");
+			printf("- Xoodoo1: runs 6 rounds of Xoodoo without using SIMD instrucitons\n");
+			printf("- Xoodoo4si: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, SHA3 instructions and bit Interleaving\n");
+			printf("- Xoodoo4sn: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, SHA3 instructions but NO bit interleaving\n");
+			printf("- Xoodoo4ni: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, NO SHA3 instructions but bit Interleaving\n");
+			printf("- Xoodoo4nn: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, NO SHA3 instructions and NO bit Interleaving\n");
+			printf("- rollCi: 4 parrallel runs of one Xc roll on a key and XOR it with 6 rounds of Xoodoo on the implementation using SIMD, SHA3 instructions and bit Interleaving\n");
+			printf("- rollCn: 4 parrallel runs of one Xc roll on a key and XOR it with 6 rounds of Xoodoo on the implementation using SIMD, SHA3 instructions but no bit Interleaving\n");
+			printf("- -h or --help: returns this help text\n");
+			printf("\n");
+			printf("The single use Xoodoo options (Xoodoo1 and Xoodoo4xx, rollCx) take as input a hardcoded message and key and output the result to the terminal.\n");
+			printf("\n");
+			printf("Please note that this code is only used for internal testing and might encounter some issues. For any questions please contact Gilles Petitjean: gilles.petitjean@gmail.com .\n");
+		}
 		
 	}
 	
