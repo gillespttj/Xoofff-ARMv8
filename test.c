@@ -11,15 +11,62 @@
 #include <math.h> //todelete
 #include <time.h>
 
-#define MAX_ROUNDS 1000000
+#define MAX_ROUNDS 10000
+#define LONG 4999999999999999999
+             
 
+#define start_benchmark\
+	benchClock = LONG;\
+	for(int i=0; i<MAX_ROUNDS; i++){ \
+	asm volatile("mrs %0, cntvct_el0" : "=r"(startClock));
+	
+#define end_benchmark\
+	asm volatile("mrs %0, cntvct_el0" : "=r"(endClock)); \
+	if(endClock-startClock<benchClock) benchClock = endClock-startClock;\
+	}
+	
+	
+	
+#define ARMV8_PMCR_MASK         0x3f
+#define ARMV8_PMCR_E            (1 << 0) /*  Enable all counters */
+#define ARMV8_PMCR_P            (1 << 1) /*  Reset all counters */
+#define ARMV8_PMCR_C            (1 << 2) /*  Cycle counter reset */
+#define ARMV8_PMCR_N_MASK       0x1f
+#define ARMV8_PMUSERENR_EN_EL0  (1 << 0) /*  EL0 access enable */
+#define ARMV8_PMUSERENR_CR      (1 << 2) /*  Cycle counter read enable */
+#define ARMV8_PMUSERENR_ER      (1 << 3) /*  Event counter read enable */
+#define ARMV8_PMCNTENSET_EL0_ENABLE (1<<31) /* *< Enable Perf count reg */
 
+/*static inline unsigned long armv8pmu_read(void)
+{
+        unsigned long long val=0;
+        asm volatile("MRS %0, pmcr_el0" : "=r" (val));
+        return (unsigned long)val;
+}
+
+static inline void armv8pmu_write(unsigned long val)
+{
+        val &= ARMV8_PMCR_MASK;
+        asm volatile("isb" : : : "memory");
+        asm volatile("MSR pmcr_el0, %0" : : "r" ((unsigned long long)val));
+}
+
+static void
+enable_cpu_counters(void* data)
+{
+        asm volatile("MSR pmuserenr_el0, %0" : : "r"((unsigned long long)ARMV8_PMUSERENR_EN_EL0|ARMV8_PMUSERENR_ER|ARMV8_PMUSERENR_CR));
+        armv8pmu_write(ARMV8_PMCR_P | ARMV8_PMCR_C);
+        asm volatile("MSR pmintenset_el1, %0" : : "r" ((unsigned long long)(0 << 31)));
+        asm volatile("MSR pmcntenset_el0, %0" : : "r" (ARMV8_PMCNTENSET_EL0_ENABLE));
+        armv8pmu_write(armv8pmu_read() | ARMV8_PMCR_E);
+}*/
 
 int main(int argc, char *argv[])
 {
 	if(argc==2)
 	{
 		float startTime, endTime;
+		unsigned long long startClock, endClock, benchClock;
 		int benchmark=0, decompose=0, xoodoo4sha_interleave=0, xoodoo4sha_no_interleave=0, xoodoo4no_sha_interleave=0,
 			xoodoo4no_sha_no_interleave=0, xoodoo1=0, xoodoo1ref=0, rollCi=0, rollCn=0, roll_benchmark=0, help=0;
 		
@@ -80,7 +127,7 @@ int main(int argc, char *argv[])
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-			printf("Time spend for %d times 6 rounds of Xoodoo with reference C implementation : %f \n",
+			printf("Time spent for %d times 6 rounds of Xoodoo with reference C implementation : %f \n",
 				MAX_ROUNDS, endTime-startTime);
 			
 			startTime = (float)clock()/CLOCKS_PER_SEC;
@@ -90,7 +137,7 @@ int main(int argc, char *argv[])
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-			printf("Time spend for %d times 6 rounds of Xoodoo with optimized implementation : %f \n",
+			printf("Time spent for %d times 6 rounds of Xoodoo with optimized implementation : %f \n",
 				MAX_ROUNDS, endTime-startTime);
 			
 			startTime = (float)clock()/CLOCKS_PER_SEC;
@@ -100,7 +147,7 @@ int main(int argc, char *argv[])
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-			printf("Time spend for %d times 6 rounds of 4 Xoodoos with interleaving using SHA3 instructions : %f \n",
+			printf("Time spent for %d times 6 rounds of 4 Xoodoos with interleaving using SHA3 instructions : %f \n",
 				MAX_ROUNDS, endTime-startTime);
 			
 			
@@ -111,7 +158,7 @@ int main(int argc, char *argv[])
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-			printf("Time spend for %d times 6 rounds of 4 Xoodoos without interleaving using SHA3 instructions : %f \n", MAX_ROUNDS, endTime-startTime);
+			printf("Time spent for %d times 6 rounds of 4 Xoodoos without interleaving using SHA3 instructions : %f \n", MAX_ROUNDS, endTime-startTime);
 				
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
@@ -120,7 +167,7 @@ int main(int argc, char *argv[])
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-			printf("Time spend for %d times 6 rounds of 4 Xoodoos with interleaving without SHA3 instructions : %f \n", MAX_ROUNDS, endTime-startTime);
+			printf("Time spent for %d times 6 rounds of 4 Xoodoos with interleaving without SHA3 instructions : %f \n", MAX_ROUNDS, endTime-startTime);
 				
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
@@ -129,7 +176,7 @@ int main(int argc, char *argv[])
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-			printf("Time spend for %d times 6 rounds of 4 Xoodoos without interleaving or SHA3 instructions : %f \n",
+			printf("Time spent for %d times 6 rounds of 4 Xoodoos without interleaving or SHA3 instructions : %f \n",
 				MAX_ROUNDS, endTime-startTime);
 		}	
 		
@@ -137,6 +184,30 @@ int main(int argc, char *argv[])
 		if(roll_benchmark)
 		{
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+						
+			/*unsigned long long test;
+			//enable_cpu_counters(NULL);
+			//asm volatile("mrs %0, cntfrq_el0" : "=r"(test));
+			
+			start_benchmark
+				roll_Xc(a, c);
+			end_benchmark
+			
+			
+			printf("Clocks spend for 1 Xc roll + 6 rounds of Xoodoo with interleaving : %llu \n",
+				benchClock);
+			
+			
+			start_benchmark
+				//roll_Xc_sha(a, c);
+				roll_Xc_sha_bench(a, c, &test);
+			end_benchmark
+			
+			printf("Clocks spend for 1 Xc roll + 6 rounds of Xoodoo without interleaving : %llu \n",
+				test);*/
+				
+			
+			
 			
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
@@ -145,8 +216,9 @@ int main(int argc, char *argv[])
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-			printf("Time spend for %d rolls + 6 rounds of Xoodoo with interleaving : %f \n",
-				MAX_ROUNDS, endTime-startTime);
+			printf("Time spent for %d Xc rolls + 6 rounds of Xoodoo with interleaving  : %f \n",
+				MAX_ROUNDS, endTime-startTime);		
+					
 			
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
@@ -155,8 +227,9 @@ int main(int argc, char *argv[])
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
-			printf("Time spend for %d rolls + 6 rounds of Xoodoo without interleaving : %f \n",
-				MAX_ROUNDS, endTime-startTime);
+			printf("Time spent for %d Xc rolls + 6 rounds of Xoodoo without interleaving  : %f \n",
+				MAX_ROUNDS, endTime-startTime);		
+			
 			
 			free(c);
 		}

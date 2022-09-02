@@ -487,6 +487,32 @@ roll_Xc_sha:
 
 	RET
 	
+
+.align 8
+.global roll_Xc_sha_bench
+.type roll_Xc_sha_bench, %function
+
+roll_Xc_sha_bench:
+	
+	MRS	x4, cntfrq_el0
+
+	load0
+	
+	loadKfull	x1
+
+	roll_Xc
+	
+	storeKfull
+	
+	Xoodoo
+
+	MRS	x5, cntfrq_el0
+	
+	SUB	x3, x5, x4
+	
+	STR	x3, [x2]
+
+	RET
 	
 	
 	
