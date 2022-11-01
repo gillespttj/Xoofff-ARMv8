@@ -202,6 +202,47 @@
 	MOV	V10.S[1], V10.S[0]
 	MOV	V11.S[1], V11.S[0]
 	
+	MOV	V0.D[1], V0.D[0]
+	MOV	V1.D[1], V1.D[0]
+	MOV	V2.D[1], V2.D[0]
+	MOV	V3.D[1], V3.D[0]
+	
+	MOV	V4.D[1], V4.D[0]
+	MOV	V5.D[1], V5.D[0]
+	MOV	V6.D[1], V6.D[0]
+	MOV	V7.D[1], V7.D[0]
+	
+	MOV	V8.D[1], V8.D[0]
+	MOV	V9.D[1], V9.D[0]
+	MOV	V10.D[1], V10.D[0]
+	MOV	V11.D[1], V11.D[0]
+	
+	/*
+	MOV	V12.16B, V0.16B
+	MOV	V13.16B, V1.16B
+	MOV	V14.16B, V2.16B
+	MOV	V15.16B, V3.16B
+	
+	MOV	V16.16B, V4.16B
+	MOV	V17.16B, V5.16B
+	MOV	V18.16B, V6.16B
+	MOV	V19.16B, V7.16B
+	
+	MOV	V20.16B, V8.16B
+	MOV	V21.16B, V9.16B
+	MOV	V22.16B, V10.16B
+	MOV	V23.16B, V11.16B*/
+.endm
+
+.macro load1copy4interleave reg
+
+	# Load data to regs
+	LD4	{V0.S, V1.S, V2.S, V3.S}[0], [\reg]
+	ADD	\reg, \reg, #16
+	LD4	{V4.S, V5.S, V6.S, V7.S}[0], [\reg]
+	ADD	\reg, \reg, #16
+	LD4	{V8.S, V9.S, V10.S, V11.S}[0], [\reg]
+	
 	MOV	V0.S[1], V0.S[0]
 	MOV	V1.S[1], V1.S[0]
 	MOV	V2.S[1], V2.S[0]
@@ -217,21 +258,20 @@
 	MOV	V10.S[1], V10.S[0]
 	MOV	V11.S[1], V11.S[0]
 	
+	MOV	V12.D[0], V0.D[0]
+	MOV	V13.D[0], V1.D[0]
+	MOV	V14.D[0], V2.D[0]
+	MOV	V15.D[0], V3.D[0]
 	
-	MOV	V12.16B, V0.16B
-	MOV	V13.16B, V1.16B
-	MOV	V14.16B, V2.16B
-	MOV	V15.16B, V3.16B
+	MOV	V16.D[0], V4.D[0]
+	MOV	V17.D[0], V5.D[0]
+	MOV	V18.D[0], V6.D[0]
+	MOV	V19.D[0], V7.D[0]
 	
-	MOV	V16.16B, V4.16B
-	MOV	V17.16B, V5.16B
-	MOV	V18.16B, V6.16B
-	MOV	V19.16B, V7.16B
-	
-	MOV	V20.16B, V8.16B
-	MOV	V21.16B, V9.16B
-	MOV	V22.16B, V10.16B
-	MOV	V23.16B, V11.16B
+	MOV	V20.D[0], V8.D[0]
+	MOV	V21.D[0], V9.D[0]
+	MOV	V22.D[0], V10.D[0]
+	MOV	V23.D[0], V11.D[0]
 .endm
 
 .macro interleave
@@ -331,12 +371,8 @@
 	EOR3	V11.16B, V11.16B, V17.16B, V23.16B
 		
 	# Swap 2 bits
-	MOVI	V26.8H,  #0x0C
-	MOVI	V27.8H,  #0xC3
-	MOVI	V28.8H,  #0x0C, LSL #8
-	MOVI	V29.8H,  #0xC3, LSL #8
-	ORR	V26.16B, V26.16B, V28.16B
-	ORR	V27.16B, V27.16B, V29.16B
+	MOVI	V26.16B, #0x0C
+	MOVI	V27.16B, #0xC3
 	
 	AND	V12.16B, V0.16B, V26.16B
 	AND	V13.16B, V1.16B, V26.16B
@@ -413,12 +449,8 @@
 	EOR3	V11.16B, V11.16B, V17.16B, V23.16B
 	
 	# Swap 1 bit
-	MOVI	V26.8H,  #0x22
-	MOVI	V27.8H,  #0x99
-	MOVI	V28.8H,  #0x22, LSL #8
-	MOVI	V29.8H,  #0x99, LSL #8
-	ORR	V26.16B, V26.16B, V28.16B
-	ORR	V27.16B, V27.16B, V29.16B
+	MOVI	V26.16B, #0x22
+	MOVI	V27.16B, #0x99
 	
 	AND	V12.16B, V0.16B, V26.16B
 	AND	V13.16B, V1.16B, V26.16B
@@ -503,12 +535,8 @@
 .macro deinterleave_store reg
 	
 	# Swap 1 bit
-	MOVI	V26.8H,  #0x22
-	MOVI	V27.8H,  #0x99
-	MOVI	V28.8H,  #0x22, LSL #8
-	MOVI	V29.8H,  #0x99, LSL #8
-	ORR	V26.16B, V26.16B, V28.16B
-	ORR	V27.16B, V27.16B, V29.16B
+	MOVI	V26.16B, #0x22
+	MOVI	V27.16B, #0x99
 	
 	AND	V12.16B, V0.16B, V26.16B
 	AND	V13.16B, V1.16B, V26.16B
@@ -585,12 +613,8 @@
 	EOR3	V11.16B, V11.16B, V17.16B, V23.16B
 	
 	# Swap 2 bits
-	MOVI	V26.8H,  #0x0C
-	MOVI	V27.8H,  #0xC3
-	MOVI	V28.8H,  #0x0C, LSL #8
-	MOVI	V29.8H,  #0xC3, LSL #8
-	ORR	V26.16B, V26.16B, V28.16B
-	ORR	V27.16B, V27.16B, V29.16B
+	MOVI	V26.16B, #0x0C
+	MOVI	V27.16B, #0xC3
 	
 	AND	V12.16B, V0.16B, V26.16B
 	AND	V13.16B, V1.16B, V26.16B
@@ -788,7 +812,7 @@
 	ST4	{V20.S, V21.S, V22.S, V23.S}[3], [\reg]
 	ADD	\reg, \reg, #16
 	ST4	{V28.S, V29.S, V30.S, V31.S}[1], [\reg]
-	ADD	\reg, \reg, #16
+	//ADD	\reg, \reg, #16
 	
 .endm
 
@@ -910,11 +934,11 @@ Xoodootimes4sha_interleaving_6rounds:
 	EOR	\dest\().16B, \dest\().16B, \work1\().16B
 .endm
 
-.macro first_roll_Xc reg
-	MOVI	V25.16B, #0xAA //maybe swap?
+.macro first_roll_Xc reg //redo?
+	MOVI	V25.16B, #0xAA 
 	MOVI	V26.16B, #0x55
 	
-	XAR	V30.2D, V12.2D, V24.2D, #38 //for rollXe, this can be done with only one reg instead of 2, and use XOR in XAR
+	XAR	V30.2D, V12.2D, V24.2D, #38 
 	XAR	V31.2D, V16.2D, V24.2D, #58
 	EOR3	V27.16B, V12.16B, V30.16B, V31.16B
 	
@@ -969,7 +993,7 @@ Xoodootimes4sha_interleaving_6rounds:
 .endm
 
 .macro load1by1 reg
-	LD1	{V12.2D}, [\reg]
+	/*LD1	{V12.2D}, [\reg]
 	ADD	\reg, \reg, #16
 	LD1	{V13.2D}, [\reg]
 	ADD	\reg, \reg, #16
@@ -992,15 +1016,14 @@ Xoodootimes4sha_interleaving_6rounds:
 	LD1	{V22.2D}, [\reg]
 	ADD	\reg, \reg, #16
 	LD1	{V23.2D}, [\reg]
-	SUB	\reg, \reg, #176
+	SUB	\reg, \reg, #176*/
 	
-	/*LD1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
+	LD1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
 	ADD	\reg\(), \reg\(), #64
 	LD1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
 	ADD	\reg\(), \reg\(), #64
 	LD1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
-	SUB	\reg\(), \reg\(), #128*/
-	
+	SUB	\reg\(), \reg\(), #128
 .endm
 
 .macro roll_Xc_second
@@ -1134,6 +1157,217 @@ roll_Xc:
 	MOV	V11.16B, V23.16B
 .endm
 
+
+.macro load_compress reg
+	LD1	{V10.4S, V11.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #32
+	LD1	{V8.4S, V9.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #32
+	LD1	{V3.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #16
+	LD1	{V0.4S, V1.4S, V2.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #48
+	LD1	{V7.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #16
+	LD1	{V4.4S, V5.4S, V6.4S}, [\reg]
+	SUB	\reg\(), \reg\(), #144
+.endm
+
+.macro copy_plane_to0 A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, plane
+	MOV	V0.4S[\plane], \A0\().4S[0]
+	MOV	V1.4S[\plane], \A1\().4S[0]
+	MOV	V2.4S[\plane], \A2\().4S[0]
+	MOV	V3.4S[\plane], \A3\().4S[0]
+	
+	MOV	V4.4S[\plane], \B0\().4S[0]
+	MOV	V5.4S[\plane], \B1\().4S[0]
+	MOV	V6.4S[\plane], \B2\().4S[0]
+	MOV	V7.4S[\plane], \B3\().4S[0]
+	
+	MOV	V8.4S[\plane],  \C0\().4S[0]
+	MOV	V9.4S[\plane],  \C1\().4S[0]
+	MOV	V10.4S[\plane], \C2\().4S[0]
+	MOV	V11.4S[\plane], \C3\().4S[0]
+.endm
+
+.macro copy_plane_to12 A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, plane
+	MOV	V12.4S[\plane], \A0\().4S[0]
+	MOV	V13.4S[\plane], \A1\().4S[0]
+	MOV	V14.4S[\plane], \A2\().4S[0]
+	MOV	V15.4S[\plane], \A3\().4S[0]
+	
+	MOV	V16.4S[\plane], \B0\().4S[0]
+	MOV	V17.4S[\plane], \B1\().4S[0]
+	MOV	V18.4S[\plane], \B2\().4S[0]
+	MOV	V19.4S[\plane], \B3\().4S[0]
+	
+	MOV	V20.4S[\plane],  \C0\().4S[0]
+	MOV	V21.4S[\plane],  \C1\().4S[0]
+	MOV	V22.4S[\plane], \C2\().4S[0]
+	MOV	V23.4S[\plane], \C3\().4S[0]
+.endm
+
+.macro roll_XE_first 
+	MOVI	V25.4S, #0x7
+
+	AND	V12.16B, V4.16B,  V8.16B 
+	AND	V13.16B, V8.16B,  V1.16B
+	AND	V14.16B, V1.16B,  V5.16B
+	
+	SRI	V15.4S, V0.4S, #27
+	SRI	V16.4S, V4.4S, #19
+	SRI	V17.4S, V4.4S, #27 
+	SRI	V18.4S, V8.4S, #19
+	SRI	V19.4S, V8.4S, #27 
+	SRI	V20.4S, V1.4S, #19
+	
+	EOR	V12.16B, V12.16B, V25.16B
+	EOR	V13.16B, V13.16B, V25.16B
+	EOR	V14.16B, V14.16B, V25.16B
+	
+	SLI	V15.4S, V0.4S, #5
+	SLI	V16.4S, V4.4S, #13
+	SLI	V17.4S, V4.4S, #5 
+	SLI	V18.4S, V8.4S, #13
+	SLI	V19.4S, V8.4S, #5 
+	SLI	V20.4S, V1.4S, #13
+	
+	EOR3	V26.16B, V12.16B, V15.16B, V16.16B
+	EOR3	V27.16B, V13.16B, V17.16B, V18.16B
+	EOR3	V28.16B, V14.16B, V19.16B, V20.16B
+	
+	copy_plane_to12 V4, V5, V6,  V7,  V8, V9, V10, V11, V1, V2,  V3,  V26, 0
+	copy_plane_to0  V8, V9, V10, V11, V1, V2, V3,  V26, V5, V6,  V7,  V27, 1
+	copy_plane_to12 V1, V2, V3,  V26, V5, V6, V7,  V27, V9, V10, V11, V28, 1
+.endm
+	
+
+.macro roll_Xe_second
+	MOV	V25.D[0], X3
+	MOV	V25.D[1], V25.D[0]
+	
+	AND	V12.16B, V7.16B, V11.16B 
+	AND	V13.16B, V11.16B, V0.16B
+	AND	V14.16B, V3.16B, V7.16B
+	AND	V15.16B, V0.16B, V4.16B
+	
+
+	XAR	V16.2D, V3.2D, V24.2D, #54 
+	XAR	V17.2D, V7.2D, V25.2D, #38
+	
+	XAR	V18.2D, V7.2D, V24.2D, #54 
+	XAR	V19.2D, V11.2D, V25.2D, #38
+	
+	XAR	V20.2D, V10.2D, V24.2D, #54 
+	XAR	V21.2D, V3.2D, V25.2D, #38
+	
+	XAR	V22.2D, V11.2D, V24.2D, #54 
+	XAR	V23.2D, V0.2D, V25.2D, #38
+	
+	EOR3	V3.16B, V12.16B, V16.16B, V17.16B
+	EOR3	V7.16B, V13.16B, V18.16B, V19.16B
+	EOR3	V10.16B, V14.16B, V20.16B, V21.16B
+	EOR3	V11.16B, V15.16B, V22.16B, V23.16B
+.endm
+
+.macro store_compress reg
+	ST1	{V0.2D, V1.2D, V2.2D, V3.2D}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	ST1	{V4.2D, V5.2D, V6.2D, V7.2D}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	ST1	{V8.2D, V9.2D, V10.2D, V11.2D}, [\reg]
+	SUB	\reg\(), \reg\(), #128
+.endm
+
+.macro loadKiplus2 reg
+	LD4	{V12.D, V13.D, V14.D, V15.D}[0], [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD4	{V16.D, V17.D, V18.D, V19.D}[0], [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD4	{V20.D, V21.D, V22.D, V23.D}[0], [\reg]
+	
+	MOV	V12.D[1], V12.D[0]
+	MOV	V13.D[1], V13.D[0]
+	MOV	V14.D[1], V14.D[0]
+	MOV	V15.D[1], V15.D[0]
+	MOV	V16.D[1], V16.D[0]
+	MOV	V17.D[1], V17.D[0]
+	MOV	V18.D[1], V18.D[0]
+	MOV	V19.D[1], V19.D[0]
+	MOV	V20.D[1], V20.D[0]
+	MOV	V21.D[1], V21.D[0]
+	MOV	V22.D[1], V22.D[0]
+	MOV	V23.D[1], V23.D[0]
+.endm
+
+.macro sum
+	EOR	V0.16B,  V0.16B,  V12.16B
+	EOR	V1.16B,  V1.16B,  V13.16B
+	EOR	V2.16B,  V2.16B,  V14.16B
+	EOR	V3.16B,  V3.16B,  V15.16B
+	
+	EOR	V4.16B,  V4.16B,  V16.16B
+	EOR	V5.16B,  V5.16B,  V17.16B
+	EOR	V6.16B,  V6.16B,  V18.16B
+	EOR	V7.16B,  V7.16B,  V19.16B
+	
+	EOR	V8.16B,  V8.16B,  V20.16B
+	EOR	V9.16B,  V9.16B,  V21.16B
+	EOR	V10.16B, V10.16B, V22.16B
+	EOR	V11.16B, V11.16B, V23.16B
+.endm
+
+
+.global roll_Xe_first
+.type roll_Xe_first,%function
+
+roll_Xe_first:
+	MOVI	V24.4S,  #0x00
+	
+	load1copy4 x1
+	roll_XE_first
+	interleave
+	store_compress x3
+	
+	Xoodoo
+	store_compress x0
+	
+	load1copy4interleave x2
+	SUB	x2, x2, #32
+	interleave
+	store_compress x2
+	
+	load1by1 x0
+	
+	sum
+	
+	
+	RET
+
+.global roll_Xe
+.type roll_Xe,%function
+
+roll_Xe:	
+	MOV	X3, 0xFC000000000
+	MOVI	V24.4S,  #0x00
+	
+	load_compress X2
+	roll_Xe_second
+	store_compress X2
+	
+	Xoodoo
+	
+	//load1by1 X1
+	loadKiplus2 X1
+	sum
+	
+	//deinterleave_store x0
+	
+	RET
+
+
+
+
 .global store
 .type store,%function
 
@@ -1141,22 +1375,6 @@ store:
 	//move12to0
 
 	deinterleave_store x0
-	
-	RET
-
-
-.global roll_Xe
-.type roll_Xe,%function
-
-roll_Xe:
-	MOV	X3, #0x3F
-	MOV	V28.2D[0], X3
-	MOV	V28.2D[1], X3
-	XAR	V25.2D, V0.2D,  V24.2D, #54
-	XAR	V26.2D, V4.2D,  V24.2D, #38
-	AND	V27.16B, V4.16B, V8.16B
-	EOR3	V25.16B, V25.16B, V26.16B, V27.16B
-	EOR	V0.16B,  V25.16B, V28.16B
 	
 	RET
 

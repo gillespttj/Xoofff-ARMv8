@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include "Xoodoo_times4ref.h"
@@ -10,9 +11,13 @@
 #include "Xoodoo_times1.h"
 #include <math.h> //todelete
 #include <time.h>
+#include "timing.h"
 
-#define MAX_ROUNDS 10000
+#define MAX_ROUNDS 1000000
 #define LONG 4999999999999999999
+
+#define ten(a)		a;a;a;a;a;a;a;a;a;a
+#define thousand(a)	ten(ten(ten(a)))
              
 
 #define start_benchmark\
@@ -26,54 +31,22 @@
 	}
 	
 	
-	
-#define ARMV8_PMCR_MASK         0x3f
-#define ARMV8_PMCR_E            (1 << 0) /*  Enable all counters */
-#define ARMV8_PMCR_P            (1 << 1) /*  Reset all counters */
-#define ARMV8_PMCR_C            (1 << 2) /*  Cycle counter reset */
-#define ARMV8_PMCR_N_MASK       0x1f
-#define ARMV8_PMUSERENR_EN_EL0  (1 << 0) /*  EL0 access enable */
-#define ARMV8_PMUSERENR_CR      (1 << 2) /*  Cycle counter read enable */
-#define ARMV8_PMUSERENR_ER      (1 << 3) /*  Event counter read enable */
-#define ARMV8_PMCNTENSET_EL0_ENABLE (1<<31) /* *< Enable Perf count reg */
-
-/*static inline unsigned long armv8pmu_read(void)
-{
-        unsigned long long val=0;
-        asm volatile("MRS %0, pmcr_el0" : "=r" (val));
-        return (unsigned long)val;
-}
-
-static inline void armv8pmu_write(unsigned long val)
-{
-        val &= ARMV8_PMCR_MASK;
-        asm volatile("isb" : : : "memory");
-        asm volatile("MSR pmcr_el0, %0" : : "r" ((unsigned long long)val));
-}
-
-static void
-enable_cpu_counters(void* data)
-{
-        asm volatile("MSR pmuserenr_el0, %0" : : "r"((unsigned long long)ARMV8_PMUSERENR_EN_EL0|ARMV8_PMUSERENR_ER|ARMV8_PMUSERENR_CR));
-        armv8pmu_write(ARMV8_PMCR_P | ARMV8_PMCR_C);
-        asm volatile("MSR pmintenset_el1, %0" : : "r" ((unsigned long long)(0 << 31)));
-        asm volatile("MSR pmcntenset_el0, %0" : : "r" (ARMV8_PMCNTENSET_EL0_ENABLE));
-        armv8pmu_write(armv8pmu_read() | ARMV8_PMCR_E);
-}*/
 
 int main(int argc, char *argv[])
 {
 	if(argc==2)
 	{
 		float startTime, endTime;
-		unsigned long long startClock, endClock, benchClock;
+		int64_t startClock, endClock, benchClock;
 		int benchmark=0, decompose=0, xoodoo4sha_interleave=0, xoodoo4sha_no_interleave=0, xoodoo4no_sha_interleave=0,
-			xoodoo4no_sha_no_interleave=0, xoodoo1=0, xoodoo1ref=0, rollCi=0, rollCn=0, roll_benchmark=0, help=0;
+			xoodoo4no_sha_no_interleave=0, xoodoo1=0, xoodoo1ref=0, rollCi=0, rollCn=0, rollEn=0, rollEi=0, roll_benchmark=0, 
+			first_roll_benchmark=0, help=0;
 		
 		for(int i=1; i<argc; i++)
 		{
 			if(strcmp(argv[1], "benchmark") == 0) benchmark = 1;
 			else if(strcmp(argv[1], "roll_benchmark") == 0) roll_benchmark = 1;
+			else if(strcmp(argv[1], "first_roll_benchmark") == 0) first_roll_benchmark = 1;
 			else if(strcmp(argv[1], "decompose") == 0) decompose = 1;
 			else if(strcmp(argv[1], "Xoodoo4si") == 0) xoodoo4sha_interleave = 1;
 			else if(strcmp(argv[1], "Xoodoo4sn") == 0) xoodoo4sha_no_interleave = 1;
@@ -83,6 +56,8 @@ int main(int argc, char *argv[])
 			else if(strcmp(argv[1], "Xoodoo1ref") == 0) xoodoo1ref = 1;
 			else if(strcmp(argv[1], "rollCi") == 0) rollCi = 1;
 			else if(strcmp(argv[1], "rollCn") == 0) rollCn = 1;
+			else if(strcmp(argv[1], "rollEn") == 0) rollEn = 1;
+			else if(strcmp(argv[1], "rollEi") == 0) rollEi = 1;
 			else if(strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) help = 1;
 			else printf("Wrong argument, type %s -h help.\n", argv[0]);
 		}
@@ -94,7 +69,7 @@ int main(int argc, char *argv[])
 		//for (int i=0; i<12; i++) a[i] = i;
 		
 		for (int j=0; j<4; j++){
-			//for (int i=0; i<12; i++) a[12*j+i] = i;
+			for (int i=0; i<12; i++) a[12*j+i] = i;
 		}
 		
 		/*a[0] = 0x1;
@@ -113,9 +88,10 @@ int main(int argc, char *argv[])
 		
 		unsigned int* b = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 		
-		unsigned int* k = (unsigned int*) malloc(12*sizeof(unsigned int));
+		unsigned int* k = (unsigned int*) malloc(4*12*sizeof(unsigned int)); 
+			//4 for saving interleaved k value of k in rollEi
 		
-		for (int i=0; i<12; i++) k[i] = i;
+		//for (int i=0; i<12; i++) k[i] = i;
 		
 		
 		if(benchmark)
@@ -172,7 +148,7 @@ int main(int argc, char *argv[])
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
 			{
-				Xoodootimes4no_sha_interleaving_6rounds(a,b);
+				Xoodootimes4no_sha_no_interleaving_6rounds(a,b);
 			}
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
@@ -184,30 +160,43 @@ int main(int argc, char *argv[])
 		if(roll_benchmark)
 		{
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+					
+			/*	
+			measureTimingDeclare
+			cycles_t dtMin = CalibrateTimer();
 						
-			/*unsigned long long test;
-			//enable_cpu_counters(NULL);
-			//asm volatile("mrs %0, cntfrq_el0" : "=r"(test));
 			
-			start_benchmark
-				roll_Xc(a, c);
-			end_benchmark
+			
+			//start_benchmark
+			measureTimingBeginDeclared
+				//roll_Xc(a, c);
+				//ten(roll_Xc(a, c));
+				thousand(roll_Xc(a, c));
+			//end_benchmark
+			measureTimingEnd
 			
 			
 			printf("Clocks spend for 1 Xc roll + 6 rounds of Xoodoo with interleaving : %llu \n",
-				benchClock);
+				(unsigned long long) benchClock);
+			
+			sleep(1);
 			
 			
-			start_benchmark
+			//start_benchmark
+			measureTimingBeginDeclared
 				//roll_Xc_sha(a, c);
-				roll_Xc_sha_bench(a, c, &test);
-			end_benchmark
+				//ten(roll_Xc_sha(a, c));
+				thousand(roll_Xc_sha(a, c));
+			//end_benchmark
+			measureTimingEnd
 			
 			printf("Clocks spend for 1 Xc roll + 6 rounds of Xoodoo without interleaving : %llu \n",
-				test);*/
+				(unsigned long long) benchClock);
 				
+			*/
 			
 			
+			roll_Xc(a, c);
 			
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
@@ -218,7 +207,9 @@ int main(int argc, char *argv[])
 			
 			printf("Time spent for %d Xc rolls + 6 rounds of Xoodoo with interleaving  : %f \n",
 				MAX_ROUNDS, endTime-startTime);		
-					
+				
+			sleep(3);
+			roll_Xc_sha(a,c);	
 			
 			startTime = (float)clock()/CLOCKS_PER_SEC;
 			for(unsigned int i=0; i<MAX_ROUNDS; i++)
@@ -230,6 +221,73 @@ int main(int argc, char *argv[])
 			printf("Time spent for %d Xc rolls + 6 rounds of Xoodoo without interleaving  : %f \n",
 				MAX_ROUNDS, endTime-startTime);		
 			
+			
+			free(c);
+		}
+		
+		if(first_roll_benchmark)
+		{
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+					
+			
+			measureTimingDeclare
+			cycles_t dtMin = CalibrateTimer();
+			
+						
+			//start_benchmark
+			measureTimingBeginDeclared
+				//roll_Xc_sha_first(a, k, c);
+				//ten(roll_Xc_sha_first(a, k, c));
+				thousand(roll_Xc_sha_first(a, k, c));
+			//end_benchmark
+			measureTimingEnd
+			
+			
+			printf("Clocks spend for 1 Xc roll + 6 rounds of Xoodoo w/o interleaving and 4 loads : %llu \n",
+				(unsigned long long) benchClock);
+			
+			sleep(1);
+			
+			
+			//start_benchmark
+			measureTimingBeginDeclared
+				//roll_Xc_sha_first2(a, k, c);
+				//ten(roll_Xc_sha_first2(a, k, c));
+				thousand(roll_Xc_sha_first2(a, k, c));
+			//end_benchmark
+			measureTimingEnd
+			
+			printf("Clocks spend for 1 Xc roll + 6 rounds of Xoodoo w/o interleaving and 1 load : %llu \n",
+				(unsigned long long) benchClock);
+				
+			/*
+			
+			
+			roll_Xc_sha_first(a, k, c);
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				roll_Xc_sha_first(a, k, c);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			
+			printf("Time spent for %d Xc rolls + 6 rounds of Xoodoo w/o interleaving and 4 loads : %f \n",
+				MAX_ROUNDS, endTime-startTime);		
+				
+			sleep(3);
+			roll_Xc_sha_first2(a, k, c);	
+			
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				roll_Xc_sha_first2(a, k, c);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			
+			printf("Time spent for %d Xc rolls + 6 rounds of Xoodoo w/o interleaving and 1 load  : %f \n",
+				MAX_ROUNDS, endTime-startTime);		
+			*/
 			
 			free(c);
 		}
@@ -281,7 +339,7 @@ int main(int argc, char *argv[])
 		if (xoodoo4sha_interleave) Xoodootimes4sha_interleaving_6rounds(a,b); //interleaved optimized
 		if (xoodoo4sha_no_interleave) Xoodootimes4sha_no_interleaving_6rounds(a, b); //no interleaving but sha
 		if (xoodoo4no_sha_interleave) Xoodootimes4no_sha_interleaving_6rounds(a,b); //interleaved but without sha instructions
-		if (xoodoo4no_sha_no_interleave) Xoodootimes4no_sha_interleaving_6rounds(a,b); // no interleaving, no sha instructions, but SIMD
+		if (xoodoo4no_sha_no_interleave) Xoodootimes4no_sha_no_interleaving_6rounds(a,b); // no interleaving, no sha instructions, but SIMD
 		
 		if (xoodoo1) Xoodootimes1_PermuteAll_6rounds(a, b); //base implementation single Xoodoo
 		
@@ -304,7 +362,7 @@ int main(int argc, char *argv[])
 		
 		if (rollCn){
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
-			roll_Xc_sha_first(a, k, c);
+			roll_Xc_sha_first2(a, k, c);
 			roll_Xc_sha(a, c);
 			store_sha(b);
 			
@@ -314,9 +372,33 @@ int main(int argc, char *argv[])
 			free(c);
 		}
 		
+		if (rollEn){
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			roll_Xe_sha_first(a, k, c);
+			roll_Xe_sha(k, c);
+			store_sha(b);
+			
+			for (int i=0; i<12; i++){
+				printf("c %d | %x:%x-%x:%x\n", i, c[4*i], c[4*i+1], c[4*i+2], c[4*i+3]);
+			}
+			free(c);
+		}
+		
+		if (rollEi){
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			roll_Xe_first(b, a, k, c);
+			roll_Xe(b, k, c);
+			store(b);
+			
+			for (int i=0; i<12; i++){
+				printf("c %d | %x:%x-%x:%x\n", i, c[4*i], c[4*i+1], c[4*i+2], c[4*i+3]);
+			}
+			free(c);
+		}
+		
 		
 		// Result
-		if (xoodoo4sha_interleave || xoodoo4sha_no_interleave || xoodoo4no_sha_interleave || xoodoo4no_sha_no_interleave || xoodoo1 || xoodoo1ref || rollCi || rollCn){ 
+		if (xoodoo4sha_interleave || xoodoo4sha_no_interleave || xoodoo4no_sha_interleave || xoodoo4no_sha_no_interleave || xoodoo1 || xoodoo1ref || rollCi || rollCn || rollEi || rollEn){ 
 			for (int i=0; i<12; i++){
 				printf("%d | %x:%x-%x:%x\n", i, b[4*i], b[4*i+1], b[4*i+2], b[4*i+3]);
 			}

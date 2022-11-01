@@ -263,12 +263,8 @@
 	EOR	V11.16B, V11.16B, V23.16B
 
 	# Swap 2 bits
-	MOVI	V26.8H,  #0x0C
-	MOVI	V27.8H,  #0xC3
-	MOVI	V28.8H,  #0x0C, LSL #8
-	MOVI	V29.8H,  #0xC3, LSL #8
-	ORR	V26.16B, V26.16B, V28.16B
-	ORR	V27.16B, V27.16B, V29.16B
+	MOVI	V26.16B,  #0x0C
+	MOVI	V27.16B,  #0xC3
 
 	AND	V12.16B, V0.16B, V26.16B
 	AND	V13.16B, V1.16B, V26.16B
@@ -357,12 +353,8 @@
 	EOR	V11.16B, V11.16B, V23.16B
 
 	# Swap 1 bit
-	MOVI	V26.8H,  #0x22
-	MOVI	V27.8H,  #0x99
-	MOVI	V28.8H,  #0x22, LSL #8
-	MOVI	V29.8H,  #0x99, LSL #8
-	ORR	V26.16B, V26.16B, V28.16B
-	ORR	V27.16B, V27.16B, V29.16B
+	MOVI	V26.16B, #0x22
+	MOVI	V27.16B, #0x99
 
 	AND	V12.16B, V0.16B, V26.16B
 	AND	V13.16B, V1.16B, V26.16B
@@ -496,12 +488,8 @@
 .macro store4deinterleave
 
 	# Swap 1 bit
-	MOVI	V26.8H,  #0x22
-	MOVI	V27.8H,  #0x99
-	MOVI	V28.8H,  #0x22, LSL #8
-	MOVI	V29.8H,  #0x99, LSL #8
-	ORR	V26.16B, V26.16B, V28.16B
-	ORR	V27.16B, V27.16B, V29.16B
+	MOVI	V26.16B,  #0x22
+	MOVI	V27.16B,  #0x99
 
 	AND	V12.16B, V0.16B, V26.16B
 	AND	V13.16B, V1.16B, V26.16B
@@ -590,12 +578,8 @@
 	EOR	V11.16B, V11.16B, V23.16B
 
 	# Swap 2 bits
-	MOVI	V26.8H,  #0x0C
-	MOVI	V27.8H,  #0xC3
-	MOVI	V28.8H,  #0x0C, LSL #8
-	MOVI	V29.8H,  #0xC3, LSL #8
-	ORR	V26.16B, V26.16B, V28.16B
-	ORR	V27.16B, V27.16B, V29.16B
+	MOVI	V26.16B,  #0x0C
+	MOVI	V27.16B,  #0xC3
 
 	AND	V12.16B, V0.16B, V26.16B
 	AND	V13.16B, V1.16B, V26.16B
@@ -794,30 +778,29 @@
 	UZP1	V31.16B, V11.16B, V0.16B
 
 	# Final Store
-	ST4	{V12.S, V13.S, V14.S, V15.S}[0], [x0]
-	ADD	x0, x0, #16
-	ST4	{V12.S, V13.S, V14.S, V15.S}[2], [x0]
-	ADD	x0, x0, #16
-	ST4	{V16.S, V17.S, V18.S, V19.S}[0], [x0]
-	ADD	x0, x0, #16
-	ST4	{V20.S, V21.S, V22.S, V23.S}[0], [x0]
-	ADD	x0, x0, #16
-	ST4	{V20.S, V21.S, V22.S, V23.S}[2], [x0]
-	ADD	x0, x0, #16
-	ST4	{V28.S, V29.S, V30.S, V31.S}[0], [x0]
-	ADD	x0, x0, #16
-	ST4	{V12.S, V13.S, V14.S, V15.S}[1], [x0]
-	ADD	x0, x0, #16
-	ST4	{V12.S, V13.S, V14.S, V15.S}[3], [x0]
-	ADD	x0, x0, #16
-	ST4	{V16.S, V17.S, V18.S, V19.S}[1], [x0]
-	ADD	x0, x0, #16
-	ST4	{V20.S, V21.S, V22.S, V23.S}[1], [x0]
-	ADD	x0, x0, #16
-	ST4	{V20.S, V21.S, V22.S, V23.S}[3], [x0]
-	ADD	x0, x0, #16
-	ST4	{V28.S, V29.S, V30.S, V31.S}[1], [x0]
-	ADD	x0, x0, #16
+	ST4	{V12.S, V13.S, V14.S, V15.S}[0], [x1]
+	ADD	x1, x1, #16
+	ST4	{V12.S, V13.S, V14.S, V15.S}[2], [x1]
+	ADD	x1, x1, #16
+	ST4	{V16.S, V17.S, V18.S, V19.S}[0], [x1]
+	ADD	x1, x1, #16
+	ST4	{V20.S, V21.S, V22.S, V23.S}[0], [x1]
+	ADD	x1, x1, #16
+	ST4	{V20.S, V21.S, V22.S, V23.S}[2], [x1]
+	ADD	x1, x1, #16
+	ST4	{V28.S, V29.S, V30.S, V31.S}[0], [x1]
+	ADD	x1, x1, #16
+	ST4	{V12.S, V13.S, V14.S, V15.S}[1], [x1]
+	ADD	x1, x1, #16
+	ST4	{V12.S, V13.S, V14.S, V15.S}[3], [x1]
+	ADD	x1, x1, #16
+	ST4	{V16.S, V17.S, V18.S, V19.S}[1], [x1]
+	ADD	x1, x1, #16
+	ST4	{V20.S, V21.S, V22.S, V23.S}[1], [x1]
+	ADD	x1, x1, #16
+	ST4	{V20.S, V21.S, V22.S, V23.S}[3], [x1]
+	ADD	x1, x1, #16
+	ST4	{V28.S, V29.S, V30.S, V31.S}[1], [x1]
 .endm
 
 
