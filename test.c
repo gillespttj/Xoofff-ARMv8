@@ -91,7 +91,8 @@ int main(int argc, char *argv[])
 		unsigned int* k = (unsigned int*) malloc(4*12*sizeof(unsigned int)); 
 			//4 for saving interleaved k value of k in rollEi
 		
-		//for (int i=0; i<12; i++) k[i] = i;
+		for (int i=0; i<12; i++) k[i] = 3*i+1;//12-i;
+		
 		
 		
 		if(benchmark)
@@ -350,7 +351,14 @@ int main(int argc, char *argv[])
 		
 		if (rollCi){
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
-			roll_Xc_first(a, k, c);
+			
+			for (int j=0; j<4; j++){
+				//for (int i=0; i<12; i++) c[12*j+i] = i;
+				//for (int i=0; i<12; i++) c[j+4*i] = i;
+			}
+			
+			roll_Xc_first2(a, k, c);
+			roll_Xc(a, c);
 			roll_Xc(a, c);
 			store(b);
 			
@@ -362,12 +370,19 @@ int main(int argc, char *argv[])
 		
 		if (rollCn){
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			
+			for (int j=0; j<4; j++){
+				//for (int i=0; i<12; i++) c[12*j+i] = i;
+				//for (int i=0; i<12; i++) c[j+4*i] = i;
+			}
+			
 			roll_Xc_sha_first2(a, k, c);
+			roll_Xc_sha(a, c);
 			roll_Xc_sha(a, c);
 			store_sha(b);
 			
 			for (int i=0; i<12; i++){
-				printf("c %d | %x:%x-%x:%x\n", i, c[4*i], c[4*i+1], c[4*i+2], c[4*i+3]);
+				//printf("c %d | %x:%x-%x:%x\n", i, c[4*i], c[4*i+1], c[4*i+2], c[4*i+3]);
 			}
 			free(c);
 		}
@@ -376,10 +391,14 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			roll_Xe_sha_first(a, k, c);
 			roll_Xe_sha(k, c);
+			roll_Xe_sha(k, c);
 			store_sha(b);
 			
 			for (int i=0; i<12; i++){
-				printf("c %d | %x:%x-%x:%x\n", i, c[4*i], c[4*i+1], c[4*i+2], c[4*i+3]);
+				//printf("c %d | %x:%x-%x:%x\n", i, c[4*i], c[4*i+1], c[4*i+2], c[4*i+3]);
+			}
+			for (int i=0; i<12; i++){
+				//printf("k %d | %x:%x-%x:%x\n", i, k[4*i], k[4*i+1], k[4*i+2], k[4*i+3]);
 			}
 			free(c);
 		}
@@ -388,10 +407,14 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			roll_Xe_first(b, a, k, c);
 			roll_Xe(b, k, c);
+			roll_Xe(b, k, c);
 			store(b);
 			
 			for (int i=0; i<12; i++){
-				printf("c %d | %x:%x-%x:%x\n", i, c[4*i], c[4*i+1], c[4*i+2], c[4*i+3]);
+				//printf("c %d | %x:%x-%x:%x\n", i, c[4*i], c[4*i+1], c[4*i+2], c[4*i+3]);
+			}
+			for (int i=0; i<12; i++){
+				//printf("k %d | %x:%x-%x:%x\n", i, k[4*i], k[4*i+1], k[4*i+2], k[4*i+3]);
 			}
 			free(c);
 		}

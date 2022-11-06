@@ -938,7 +938,7 @@ Xoodootimes4sha_interleaving_6rounds:
 	MOVI	V25.16B, #0xAA 
 	MOVI	V26.16B, #0x55
 	
-	XAR	V30.2D, V12.2D, V24.2D, #38 
+	SHL	V30.2D, V12.2D, #26
 	XAR	V31.2D, V16.2D, V24.2D, #58
 	EOR3	V27.16B, V12.16B, V30.16B, V31.16B
 	
@@ -956,7 +956,7 @@ Xoodootimes4sha_interleaving_6rounds:
 	ADD	\reg, \reg, #16
 	
 	
-	XAR	V30.2D, V16.2D, V24.2D, #38 
+	SHL	V30.2D, V16.2D, #26 
 	XAR	V31.2D, V20.2D, V24.2D, #58
 	EOR3	V28.16B, V16.16B, V30.16B, V31.16B
 	
@@ -974,7 +974,7 @@ Xoodootimes4sha_interleaving_6rounds:
 	ADD	\reg, \reg, #16
 	
 	
-	XAR	V30.2D, V20.2D, V24.2D, #38 
+	SHL	V30.2D, V20.2D, #26 
 	XAR	V31.2D, V13.2D, V24.2D, #58 //check 13?
 	EOR3	V29.16B, V20.16B, V30.16B, V31.16B
 	
@@ -990,6 +990,62 @@ Xoodootimes4sha_interleaving_6rounds:
 	roll_mix V23, V27, V28, V29, V11, V12, V16
 	ST1	{V12.2D}, [\reg]
 	SUB	\reg, \reg, #176 //remove?
+.endm
+
+.macro copy_plane_to0 A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, plane
+	MOV	V0.4S[\plane], \A0\().4S[0]
+	MOV	V1.4S[\plane], \A1\().4S[0]
+	MOV	V2.4S[\plane], \A2\().4S[0]
+	MOV	V3.4S[\plane], \A3\().4S[0]
+	
+	MOV	V4.4S[\plane], \B0\().4S[0]
+	MOV	V5.4S[\plane], \B1\().4S[0]
+	MOV	V6.4S[\plane], \B2\().4S[0]
+	MOV	V7.4S[\plane], \B3\().4S[0]
+	
+	MOV	V8.4S[\plane],  \C0\().4S[0]
+	MOV	V9.4S[\plane],  \C1\().4S[0]
+	MOV	V10.4S[\plane], \C2\().4S[0]
+	MOV	V11.4S[\plane], \C3\().4S[0]
+.endm
+
+.macro copy_plane_to12 A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, plane
+	MOV	V12.4S[\plane], \A0\().4S[0]
+	MOV	V13.4S[\plane], \A1\().4S[0]
+	MOV	V14.4S[\plane], \A2\().4S[0]
+	MOV	V15.4S[\plane], \A3\().4S[0]
+	
+	MOV	V16.4S[\plane], \B0\().4S[0]
+	MOV	V17.4S[\plane], \B1\().4S[0]
+	MOV	V18.4S[\plane], \B2\().4S[0]
+	MOV	V19.4S[\plane], \B3\().4S[0]
+	
+	MOV	V20.4S[\plane],  \C0\().4S[0]
+	MOV	V21.4S[\plane],  \C1\().4S[0]
+	MOV	V22.4S[\plane], \C2\().4S[0]
+	MOV	V23.4S[\plane], \C3\().4S[0]
+.endm
+
+.macro first_roll_Xc2 reg
+	SRI	V16.4S, V4.4S, #29
+	SRI	V18.4S, V8.4S, #29
+	SRI	V20.4S, V1.4S, #29
+	
+	SHL	V15.4S, V0.4S, #13
+	SHL	V17.4S, V4.4S, #13 
+	SHL	V19.4S, V8.4S, #13
+	
+	SLI	V16.4S, V4.4S, #3
+	SLI	V18.4S, V8.4S, #3
+	SLI	V20.4S, V1.4S, #3
+	
+	EOR3	V26.16B, V0.16B, V15.16B, V16.16B
+	EOR3	V27.16B, V4.16B, V17.16B, V18.16B
+	EOR3	V28.16B, V8.16B, V19.16B, V20.16B
+	
+	copy_plane_to12 V4, V5, V6,  V7,  V8, V9, V10, V11, V1, V2,  V3,  V26, 0
+	copy_plane_to0  V8, V9, V10, V11, V1, V2, V3,  V26, V5, V6,  V7,  V27, 1
+	copy_plane_to12 V1, V2, V3,  V26, V5, V6, V7,  V27, V9, V10, V11, V28, 1
 .endm
 
 .macro load1by1 reg
@@ -1026,19 +1082,28 @@ Xoodootimes4sha_interleaving_6rounds:
 	SUB	\reg\(), \reg\(), #128
 .endm
 
+.macro store_compress reg
+	ST1	{V0.2D, V1.2D, V2.2D, V3.2D}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	ST1	{V4.2D, V5.2D, V6.2D, V7.2D}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	ST1	{V8.2D, V9.2D, V10.2D, V11.2D}, [\reg]
+	SUB	\reg\(), \reg\(), #128
+.endm
+
 .macro roll_Xc_second
-	XAR	V25.2D, V16.2D, V24.2D, #38 
+	SHL	V25.2D, V16.2D, #26 
 	XAR	V26.2D, V20.2D, V24.2D, #58
 	
-	XAR	V27.2D, V20.2D, V24.2D, #38 
+	SHL	V27.2D, V20.2D, #26 
 	XAR	V28.2D, V13.2D, V24.2D, #58
 	
-	XAR	V29.2D, V12.2D, V24.2D, #38 
+	SHL	V29.2D, V12.2D, #26 
 	XAR	V30.2D, V16.2D, V24.2D, #58
 	
 	EOR3	V16.16B, V16.16B, V25.16B, V26.16B
 	
-	XAR	V25.2D, V13.2D, V24.2D, #38 
+	SHL	V25.2D, V13.2D, #26 
 	XAR	V26.2D, V17.2D, V24.2D, #58
 	
 	EOR3	V20.16B, V20.16B, V27.16B, V28.16B
@@ -1102,6 +1167,23 @@ Xoodootimes4sha_interleaving_6rounds:
 	ST1	{V12.2D, V13.2D}, [x1]
 .endm
 
+.macro sum
+	EOR	V0.16B,  V0.16B,  V12.16B
+	EOR	V1.16B,  V1.16B,  V13.16B
+	EOR	V2.16B,  V2.16B,  V14.16B
+	EOR	V3.16B,  V3.16B,  V15.16B
+	
+	EOR	V4.16B,  V4.16B,  V16.16B
+	EOR	V5.16B,  V5.16B,  V17.16B
+	EOR	V6.16B,  V6.16B,  V18.16B
+	EOR	V7.16B,  V7.16B,  V19.16B
+	
+	EOR	V8.16B,  V8.16B,  V20.16B
+	EOR	V9.16B,  V9.16B,  V21.16B
+	EOR	V10.16B, V10.16B, V22.16B
+	EOR	V11.16B, V11.16B, V23.16B
+.endm
+
 
 .global roll_Xc_first
 .type roll_Xc_first,%function
@@ -1109,7 +1191,8 @@ Xoodootimes4sha_interleaving_6rounds:
 roll_Xc_first:
 	MOVI	V24.4S,  #0x00
 	
-	load1copy4 x1
+	//load1copy4 x1 // interleave version?
+	load1copy4interleave x1
 	interleave
 	store4 x2
 	
@@ -1118,6 +1201,28 @@ roll_Xc_first:
 	
 	load4_12 x2
 	first_roll_Xc x2
+	
+	Xoodoo
+	
+	RET
+	
+.global roll_Xc_first2
+.type roll_Xc_first2,%function
+
+roll_Xc_first2:
+	MOVI	V24.4S,  #0x00
+	
+	load1copy4 x1
+	first_roll_Xc2 x2
+	interleave
+	store_compress x2
+	
+	load4interleave x0
+	interleave
+	
+	load1by1 x2
+	
+	sum
 	
 	Xoodoo
 	
@@ -1173,39 +1278,7 @@ roll_Xc:
 	SUB	\reg\(), \reg\(), #144
 .endm
 
-.macro copy_plane_to0 A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, plane
-	MOV	V0.4S[\plane], \A0\().4S[0]
-	MOV	V1.4S[\plane], \A1\().4S[0]
-	MOV	V2.4S[\plane], \A2\().4S[0]
-	MOV	V3.4S[\plane], \A3\().4S[0]
-	
-	MOV	V4.4S[\plane], \B0\().4S[0]
-	MOV	V5.4S[\plane], \B1\().4S[0]
-	MOV	V6.4S[\plane], \B2\().4S[0]
-	MOV	V7.4S[\plane], \B3\().4S[0]
-	
-	MOV	V8.4S[\plane],  \C0\().4S[0]
-	MOV	V9.4S[\plane],  \C1\().4S[0]
-	MOV	V10.4S[\plane], \C2\().4S[0]
-	MOV	V11.4S[\plane], \C3\().4S[0]
-.endm
 
-.macro copy_plane_to12 A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, plane
-	MOV	V12.4S[\plane], \A0\().4S[0]
-	MOV	V13.4S[\plane], \A1\().4S[0]
-	MOV	V14.4S[\plane], \A2\().4S[0]
-	MOV	V15.4S[\plane], \A3\().4S[0]
-	
-	MOV	V16.4S[\plane], \B0\().4S[0]
-	MOV	V17.4S[\plane], \B1\().4S[0]
-	MOV	V18.4S[\plane], \B2\().4S[0]
-	MOV	V19.4S[\plane], \B3\().4S[0]
-	
-	MOV	V20.4S[\plane],  \C0\().4S[0]
-	MOV	V21.4S[\plane],  \C1\().4S[0]
-	MOV	V22.4S[\plane], \C2\().4S[0]
-	MOV	V23.4S[\plane], \C3\().4S[0]
-.endm
 
 .macro roll_XE_first 
 	MOVI	V25.4S, #0x7
@@ -1270,14 +1343,6 @@ roll_Xc:
 	EOR3	V11.16B, V15.16B, V22.16B, V23.16B
 .endm
 
-.macro store_compress reg
-	ST1	{V0.2D, V1.2D, V2.2D, V3.2D}, [\reg]
-	ADD	\reg\(), \reg\(), #64
-	ST1	{V4.2D, V5.2D, V6.2D, V7.2D}, [\reg]
-	ADD	\reg\(), \reg\(), #64
-	ST1	{V8.2D, V9.2D, V10.2D, V11.2D}, [\reg]
-	SUB	\reg\(), \reg\(), #128
-.endm
 
 .macro loadKiplus2 reg
 	LD4	{V12.D, V13.D, V14.D, V15.D}[0], [\reg]
@@ -1299,24 +1364,6 @@ roll_Xc:
 	MOV	V22.D[1], V22.D[0]
 	MOV	V23.D[1], V23.D[0]
 .endm
-
-.macro sum
-	EOR	V0.16B,  V0.16B,  V12.16B
-	EOR	V1.16B,  V1.16B,  V13.16B
-	EOR	V2.16B,  V2.16B,  V14.16B
-	EOR	V3.16B,  V3.16B,  V15.16B
-	
-	EOR	V4.16B,  V4.16B,  V16.16B
-	EOR	V5.16B,  V5.16B,  V17.16B
-	EOR	V6.16B,  V6.16B,  V18.16B
-	EOR	V7.16B,  V7.16B,  V19.16B
-	
-	EOR	V8.16B,  V8.16B,  V20.16B
-	EOR	V9.16B,  V9.16B,  V21.16B
-	EOR	V10.16B, V10.16B, V22.16B
-	EOR	V11.16B, V11.16B, V23.16B
-.endm
-
 
 .global roll_Xe_first
 .type roll_Xe_first,%function
@@ -1353,12 +1400,14 @@ roll_Xe:
 	
 	load_compress X2
 	roll_Xe_second
+	//load1by1 X2 //todelete
 	store_compress X2
 	
 	Xoodoo
 	
-	//load1by1 X1
-	loadKiplus2 X1
+	load1by1 X1
+	//loadKiplus2 X1
+	
 	sum
 	
 	//deinterleave_store x0

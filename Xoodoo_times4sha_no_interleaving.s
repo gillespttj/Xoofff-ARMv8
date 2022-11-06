@@ -123,6 +123,15 @@
 	LD4	{V8.S, V9.S, V10.S, V11.S}[3], [\reg\()]
 .endm
 
+.macro load0linear reg
+	LD1	{V0.4S, V1.4S, V2.4S, V3.4S}, [\reg\()]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V4.4S, V5.4S, V6.4S, V7.4S}, [\reg\()]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V8.4S, V9.4S, V10.4S, V11.4S}, [\reg\()]
+	SUB	\reg\(), \reg\(), #128
+.endm
+
 .macro load12 reg
 	LD4	{V12.S, V13.S, V14.S, V15.S}[0], [\reg]
 	ADD	\reg\(), \reg\(), #16
@@ -148,6 +157,15 @@
 	ADD	\reg\(), \reg\(), #16
 	LD4	{V20.S, V21.S, V22.S, V23.S}[3], [\reg]
 	SUB	\reg\(), \reg\(), #176
+.endm
+
+.macro load12linear reg
+	LD1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
+	SUB	\reg\(), \reg\(), #128
 .endm
 
 .macro store0 reg
@@ -176,6 +194,14 @@
 	ST4	{V8.S, V9.S, V10.S, V11.S}[3], [\reg]
 .endm
 
+.macro store0linear reg
+	ST1	{V0.4S, V1.4S, V2.4S, V3.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	ST1	{V4.4S, V5.4S, V6.4S, V7.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	ST1	{V8.4S, V9.4S, V10.4S, V11.4S}, [\reg]
+.endm
+
 .macro store12 reg	
 	ST4	{V12.S, V13.S, V14.S, V15.S}[0], [\reg]
 	ADD	\reg\(), \reg\(), #16
@@ -200,6 +226,14 @@
 	ST4	{V16.S, V17.S, V18.S, V19.S}[3], [\reg]
 	ADD	\reg\(), \reg\(), #16
 	ST4	{V20.S, V21.S, V22.S, V23.S}[3], [\reg]
+.endm
+
+.macro store12linear reg	
+	ST1	{V12.4S, V13.4S, V14.4S, V15.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	ST1	{V16.4S, V17.4S, V18.4S, V19.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	ST1	{V20.4S, V21.4S, V22.4S, V23.4S}, [\reg]
 .endm
 
 .macro Xoodoo
@@ -241,19 +275,17 @@
 	rho_e
 .endm
 
-.macro first_roll_Xc_part1	
-	SRI	V0.4S, V12.4S, #19
+.macro first_roll_Xc_part1
 	SRI	V1.4S, V16.4S, #29
-	SRI	V2.4S, V16.4S, #19
 	SRI	V3.4S, V20.4S, #29
-	SRI	V4.4S, V20.4S, #19
 	SRI	V5.4S, V13.4S, #29
 	
-	SLI	V0.4S, V12.4S, #13
+	SHL	V0.4S, V12.4S, #13
+	SHL	V2.4S, V16.4S, #13
+	SHL	V4.4S, V20.4S, #13
+	
 	SLI	V1.4S, V16.4S, #3
-	SLI	V2.4S, V16.4S, #13
 	SLI	V3.4S, V20.4S, #3
-	SLI	V4.4S, V20.4S, #13
 	SLI	V5.4S, V13.4S, #3
 	
 	EOR3	V25.16B, V12.16B, V0.16B, V1.16B
@@ -423,7 +455,8 @@ roll_Xc_sha_first:
 	
 	load0	x0 
 	
-	first_storeK_full x2
+	//first_storeK_full x2
+	store12linear x2
 	
 	first_roll_Xc_part2
 	
@@ -444,7 +477,8 @@ roll_Xc_sha_first2:
 	
 	load0	x0 
 	
-	first_storeK_full x2
+	//first_storeK_full x2
+	store12linear x2
 	
 	first_roll_Xc_part2
 	
@@ -468,7 +502,8 @@ roll_Xc_sha_first2_sum:
 	//ADD	x0, x0, #16
 	
 	
-	first_storeK_full x2
+	//first_storeK_full x2
+	store12linear x2
 	
 	first_roll_Xc_part2
 	
@@ -482,28 +517,19 @@ roll_Xc_sha_first2_sum:
 
 
 .macro roll_Xc
-	SRI	V24.4S, V16.4S, #19
 	SRI	V25.4S, V20.4S, #29
-
-	SRI	V26.4S, V20.4S, #19
 	SRI	V27.4S, V13.4S, #29
-	
-	SRI	V28.4S, V12.4S, #19
 	SRI	V29.4S, V16.4S, #29
-	
-	SRI	V30.4S, V13.4S, #19
 	SRI	V31.4S, V17.4S, #29
 	
-	SLI	V24.4S, V16.4S, #13
+	SHL	V24.4S, V16.4S, #13
+	SHL	V26.4S, V20.4S, #13
+	SHL	V28.4S, V12.4S, #13
+	SHL	V30.4S, V13.4S, #13
+	
 	SLI	V25.4S, V20.4S, #3
-	
-	SLI	V26.4S, V20.4S, #13
 	SLI	V27.4S, V13.4S, #3
-	
-	SLI	V28.4S, V12.4S, #13
 	SLI	V29.4S, V16.4S, #3
-	
-	SLI	V30.4S, V13.4S, #13
 	SLI	V31.4S, V17.4S, #3
 	
 	EOR3	V16.16B, V16.16B, V24.16B, V25.16B
@@ -552,6 +578,20 @@ roll_Xc_sha_first2_sum:
 	storeK	3
 .endm
 
+.macro storeKlinear
+	ST1	{V17.4S, V18.4S, V19.4S}, [x1]
+	ADD	x1, x1, #48
+	ST1	{V16.4S}, [x1]
+	ADD	x1, x1, #16
+	ST1	{V21.4S, V22.4S, V23.4S}, [x1]
+	ADD	x1, x1, #48
+	ST1	{V20.4S}, [x1]
+	ADD	x1, x1, #16
+	ST1	{V14.4S, V15.4S}, [x1]
+	ADD	x1, x1, #32
+	ST1	{V12.4S, V13.4S}, [x1]
+.endm
+
 	
 .align 8
 .global roll_Xc_sha
@@ -562,11 +602,15 @@ roll_Xc_sha:
 	load0	x0
 	//ADD	x0, x0, #16
 	
-	load4roll	x1
+	//load4roll	x1
+	load12linear x1
 
 	roll_Xc
 	
-	storeKfull
+	//storeKfull
+	//store12linear x1
+	storeKlinear
+	
 	
 	Xoodoo
 
@@ -598,13 +642,16 @@ roll_Xc_sha:
 
 roll_Xc_sha_sum:
 
-	load0	x0
+	load0		x0
 	
-	load4roll	x1
+	//load4roll	x1
+	load12linear x1
 
 	roll_Xc
 	
-	storeKfull
+	//storeKfull
+	//store12linear x1
+	storeKlinear
 	
 	Xoodoo
 	
@@ -753,7 +800,8 @@ roll_Xe_sha_first:
 
 	first_roll_Xe
 	
-	first_storeRoll_full	x2
+	//first_storeRoll_full	x2
+	store0linear		x2
 	
 	Xoodoo
 	
@@ -825,6 +873,20 @@ roll_Xe_sha_first:
 	storeK0	2
 	ADD	x1, x1, #8
 	storeK0	3
+.endm
+
+.macro storeK0linear 
+	ST1	{V5.4S, V6.4S, V7.4S}, [x1]
+	ADD	x1, x1, #48
+	ST1	{V4.4S}, [x1]
+	ADD	x1, x1, #16
+	ST1	{V9.4S, V10.4S, V11.4S}, [x1]
+	ADD	x1, x1, #48
+	ST1	{V8.4S}, [x1]
+	ADD	x1, x1, #16
+	ST1	{V2.4S, V3.4S}, [x1]
+	ADD	x1, x1, #32
+	ST1	{V0.4S, V1.4S}, [x1]
 .endm
 
 .macro thetaPostRoll
@@ -907,16 +969,21 @@ roll_Xe_sha_first:
 
 roll_Xe_sha:
 
-	load0	x1
-	SUB	x1, x1, #176
+	//load0	x1
+	//SUB	x1, x1, #176
+	load0linear x1
 
 	roll_Xe
 	
-	storeKfull0
+	//storeKfull0
 	//SUB	x1, x1, #184
+	storeK0linear
 	
 	XoodooPostRoll
+	
+	first_load4roll x0
 
+	sum
 
 	RET //x0
 
