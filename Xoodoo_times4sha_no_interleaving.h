@@ -27,15 +27,15 @@ http://creativecommons.org/publicdomain/zero/1.0/
 
 void Xoodootimes4sha_no_interleaving_6rounds(unsigned int *src, unsigned int *dest);
 
-void roll_Xc_sha_first(unsigned int *src, unsigned int *k, unsigned int *work_mem); 
-void roll_Xc_sha_first2(unsigned int *src, unsigned int *k, unsigned int *work_mem); 
-void roll_Xc_sha(unsigned int *src, unsigned int *work_mem);
-void roll_Xc_sha_first_sum(unsigned int *src, unsigned int *k, unsigned int *work_mem, unsigned int *sum); 
-void roll_Xc_sha_sum(unsigned int *src, unsigned int *work_mem, unsigned int *sum);
+void Compressiontimes4n_first(unsigned int *src, unsigned int *k, unsigned int *work_mem); 
+void Compressiontimes4n(unsigned int *src, unsigned int *work_mem);
+void Compressiontimes4n_first_sum(unsigned int *src, unsigned int *k, unsigned int *work_mem, unsigned int *sum); 
+void Compressiontimes4n_sum(unsigned int *src, unsigned int *work_mem, unsigned int *sum);
 
-void roll_Xe_sha_first(unsigned int *sum, unsigned int *k, unsigned int *work_mem); 
-void roll_Xe_sha(unsigned int *k, unsigned int *work_mem);
+void Expansiontimes4n_first(unsigned int *sum, unsigned int *k, unsigned int *work_mem); 
+void Expansiontimes4n_first2(unsigned int *sum, unsigned int *k, unsigned int *work_mem); 
+void Expansiontimes4n(unsigned int *k, unsigned int *work_mem);
 
-void store_sha(unsigned int *dest);
+void store_n(unsigned int *dest);
 
 #endif

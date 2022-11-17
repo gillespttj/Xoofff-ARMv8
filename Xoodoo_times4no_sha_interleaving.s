@@ -465,8 +465,10 @@
 	rho_e
 
 	theta
-	MOV	X3, #0xFF00
-	iota
+	//MOV	X3, #0xFF00
+	//iota
+	MOVI	V25.2D, #0xFF00
+	EOR	V0.16B, V25.16B, V0.16B
 	rho_w_chi
 	rho_e
 
