@@ -13,7 +13,7 @@
 #include <time.h>
 #include "timing.h"
 
-#define MAX_ROUNDS 1000000
+#define MAX_ROUNDS 1000
 #define LONG 4999999999999999999
 
 #define ten(a)		a;a;a;a;a;a;a;a;a;a
@@ -36,7 +36,7 @@
 	}
 	
 #define print_timing_results\
-	printf("Clocks spend - avg: %llu, min: %llu \n", (unsigned long long) avgClock, (unsigned long long) minClock);
+	printf("Clocks spend - avg: %llu ns, min: %llu ns\n", (unsigned long long) avgClock, (unsigned long long) minClock);
 	
 	
 
@@ -44,13 +44,14 @@ int main(int argc, char *argv[])
 {
 	if(argc==2)
 	{
-		float startTime, endTime;
+		float startTime, endTime, computeTime;
 		int64_t startClock, endClock, minClock, avgClock;
 		int decompose1=0, decompose2=0, decompose3=0, decompose4=0, decompose5=0, decompose6=0,
 			xoodoo4sha_interleave=0, xoodoo4sha_no_interleave=0, xoodoo4no_sha_interleave=0,
 			xoodoo4no_sha_no_interleave=0, xoodoo1=0, xoodoo1ref=0, comp_i=0, comp_i2=0, comp_n=0, exp_n=0,
 			exp_n2=0, exp_i=0, help=0, comp_i_first=0, comp_i_first2=0, comp_i_second=0, comp_n_first=0,
-			comp_n_second=0, exp_i_first=0, exp_i_second=0, exp_n_first=0, exp_n_first2=0, exp_n_second=0;
+			comp_n_second=0, exp_i_first=0, exp_i_second=0, exp_n_first=0, exp_n_first2=0, exp_n_second=0,
+			xoodoo4sha_interleave_no_interleave=0;
 		
 		for(int i=1; i<argc; i++)
 		{
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
 			else if(strcmp(argv[1], "decompose5") == 0) decompose5 = 1;
 			else if(strcmp(argv[1], "decompose6") == 0) decompose6 = 1;
 			else if(strcmp(argv[1], "Xoodoo4si") == 0) xoodoo4sha_interleave = 1;
+			else if(strcmp(argv[1], "Xoodoo4sin") == 0) xoodoo4sha_interleave_no_interleave = 1;
 			else if(strcmp(argv[1], "Xoodoo4sn") == 0) xoodoo4sha_no_interleave = 1;
 			else if(strcmp(argv[1], "Xoodoo4ni") == 0) xoodoo4no_sha_interleave = 1;
 			else if(strcmp(argv[1], "Xoodoo4nn") == 0) xoodoo4no_sha_no_interleave = 1;
@@ -119,9 +121,22 @@ int main(int argc, char *argv[])
 		
 		
 		
-		if (xoodoo4sha_interleave || xoodoo4sha_no_interleave || xoodoo4no_sha_interleave || xoodoo4no_sha_no_interleave || xoodoo1 || xoodoo1ref || comp_i || comp_n || exp_i || exp_n){ 
+		if (xoodoo4sha_interleave || xoodoo4sha_no_interleave || xoodoo4no_sha_interleave ||
+		 xoodoo4no_sha_no_interleave || xoodoo1 || xoodoo1ref || comp_i_first || comp_i_first2 || comp_i_second ||
+		 comp_n_first || comp_n_second || exp_i_first || exp_i_second || exp_n_first || exp_n_first2 ||
+		 exp_n_second){ 
 			measureTimingDeclare
 			cycles_t dtMin = CalibrateTimer();
+			
+			//For comparison with old timing
+			startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				nothing();
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			computeTime = endTime - startTime;
+			
 		}
 		
 		measureTimingDeclare
@@ -187,6 +202,13 @@ int main(int argc, char *argv[])
 			
 			measureTimingBeginDeclared
 				thousand(Xoodootimes4sha_interleaving_6rounds(a,b)); 
+			measureTimingEnd
+			print_timing_results
+		}
+		if (xoodoo4sha_interleave_no_interleave) { //interleaved optimized but without the interleaving itself
+			//no results printed as input isn't interleaved
+			measureTimingBeginDeclared
+				thousand(Xoodootimes4sha_interleaving_6rounds_no_interleave(a,b)); 
 			measureTimingEnd
 			print_timing_results
 		}
@@ -365,13 +387,23 @@ int main(int argc, char *argv[])
 		
 		
 		if (comp_i_first) {
-			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+				
 			measureTimingBeginDeclared
 				thousand(Compressiontimes4i_first(a, k, c));
 			measureTimingEnd
-			print_timing_results
+			print_timing_results // */
+			
+			/*startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				Compressiontimes4i_first(a, k, c);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			
+			printf("Time spend for %d times: %f ns\n", MAX_ROUNDS, (endTime-startTime-computeTime)*1.0e9); // */
 		}
-		if (comp_i_first) {
+		if (comp_i_first2) {
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			measureTimingBeginDeclared
 				thousand(Compressiontimes4i_first2(a, k, c));
@@ -380,10 +412,20 @@ int main(int argc, char *argv[])
 		}
 		if (comp_i_second) {
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
+			
 			measureTimingBeginDeclared
 				thousand(Compressiontimes4i(a, c));
 			measureTimingEnd
-			print_timing_results
+			print_timing_results // */
+			
+			/*startTime = (float)clock()/CLOCKS_PER_SEC;
+			for(unsigned int i=0; i<MAX_ROUNDS; i++)
+			{
+				Compressiontimes4i(a, c);
+			}
+			endTime = (float)clock()/CLOCKS_PER_SEC;
+			
+			printf("Time spend for %d times: %f ns\n", MAX_ROUNDS, (endTime-startTime-computeTime)*1.0e9); // */
 		}
 		
 		if (comp_n_first) {
@@ -456,6 +498,7 @@ int main(int argc, char *argv[])
 			printf("- Xoodoo1ref: runs 6 rounds of Xoodoo using a reference C implementation (without SIMD)\n");
 			printf("- Xoodoo1: runs 6 rounds of Xoodoo without using SIMD instrucitons\n");
 			printf("- Xoodoo4si: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, SHA3 instructions and bit Interleaving\n");
+			printf("- Xoodoo4sin: similar to Xoodoo4si without the executing the interleaving (does not print results)\n");
 			printf("- Xoodoo4sn: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, SHA3 instructions but NO bit interleaving\n");
 			printf("- Xoodoo4ni: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, NO SHA3 instructions but bit Interleaving\n");
 			printf("- Xoodoo4nn: 4 parrallel runs of 6 rounds of Xoodoo on the implementation using SIMD, NO SHA3 instructions and NO bit Interleaving\n");

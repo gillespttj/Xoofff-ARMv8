@@ -853,9 +853,9 @@
 	ADD	\reg, \reg, #16
 	LD4	{V0.S, V1.S, V2.S, V3.S}[3], [\reg]
 	ADD	\reg, \reg, #16
-	LD4	{V4.S, V5.S, V6.S, V7.S}[4], [\reg]
+	LD4	{V4.S, V5.S, V6.S, V7.S}[3], [\reg]
 	ADD	\reg, \reg, #16
-	LD4	{V8.S, V9.S, V10.S, V11.S}[5], [\reg]
+	LD4	{V8.S, V9.S, V10.S, V11.S}[3], [\reg]
 	SUB	\reg, \reg, #176
 .endm
 
@@ -885,6 +885,15 @@
 	ADD	\reg, \reg, #16
 	LD4	{V20.S, V21.S, V22.S, V23.S}[3], [\reg]
 	SUB	\reg, \reg, #176
+.endm
+
+.macro load4linear reg
+	LD1	{V0.2D, V1.2D, V2.2D, V3.2D}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V4.2D, V5.2D, V6.2D, V7.2D}, [\reg]
+	ADD	\reg\(), \reg\(), #64
+	LD1	{V8.2D, V9.2D, V10.2D, V11.2D}, [\reg]
+	//SUB	\reg\(), \reg\(), #128
 .endm
 
 .macro load4linear_to_V12 reg
@@ -1064,6 +1073,24 @@ Xoodootimes4sha_interleaving_6rounds:
 	deinterleave_store x1
 
 	RET
+	
+.global Xoodootimes4sha_interleaving_6rounds_no_interleave
+.type Xoodootimes4sha_interleaving_6rounds_no_interleave,%function
+
+Xoodootimes4sha_interleaving_6rounds_no_interleave:
+	
+	load4			x0 //used for comparison with other Xoodoo4 implementations
+	//load4linear		x0 //best case scenario if data is already interleaved
+	
+	MOVI	V24.4S,  #0x00
+	Xoodoo
+
+	store4			 x1 
+	//store4linear		 x1
+
+	RET
+	
+	
 	
 	
 	
