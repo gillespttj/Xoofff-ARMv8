@@ -52,17 +52,16 @@
     EOR     V7.16B,  V7.16B, V23.16B
 .endm
 
-
-.macro iota_1
-    EOR     V0.16B, V0.16B, V25.16B
+.macro iota_1 val
+    MOVI	V25.4S, #\val
+    EOR		V0.16B, V0.16B, V25.16B
 .endm
 
-.macro iota_2
-    MOV     V25.2D[0], X3
-    MOV     V25.2D[1], X3
-    EOR     V0.16B, V0.16B, V25.16B
+.macro iota_2 val, shift
+    MOVI	V25.4S, #\val
+    SHL		V25.4S, V25.4S, #\shift
+    EOR		V0.16B, V0.16B, V25.16B
 .endm
-
 
 .macro rho_w_chi
     SRI     V8.4S,  V12.4S, #21
@@ -166,39 +165,32 @@ Xoodootimes4no_sha_no_interleaving_6rounds:
     
     
     theta 
-    MOVI     V25.4S, #0x60
-    iota_1
+    iota_1	0x60
     rho_w_chi
     rho_e
-    
+
     theta
-    MOVI     V25.4S, #0x2C
-    iota_1
+    iota_1	0x2C
     rho_w_chi
     rho_e
-    
+
     theta
-    MOV      X3, #0x0000038000000380
-    iota_2
+    iota_2	0x7, 7
     rho_w_chi
     rho_e
-    
+
     theta
-    MOVI     V25.4S, #0xF0
-    iota_1
+    iota_1	0xF0
     rho_w_chi
     rho_e
-    
+
     theta
-    MOV      X3, #0x000001A0
-    MOVK     X3, #0x000001A0, LSL #32
-    iota_2
+    iota_2	0xD, 5
     rho_w_chi
     rho_e
-    
+
     theta
-    MOVI     V25.4S, #0x12
-    iota_1
+    iota_1	0x12
     rho_w_chi
     rho_e
     
