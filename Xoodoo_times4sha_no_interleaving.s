@@ -502,7 +502,7 @@
 
 
 
-.macro first_roll_Xc_part1
+.macro first_roll_Xc
 	SRI	V1.4S, V16.4S, #29
 	SRI	V3.4S, V20.4S, #29
 	SRI	V5.4S, V13.4S, #29
@@ -643,7 +643,7 @@ Compressiontimes4n_first:
 	//load1toV12_4times x1
 	//load4toV12linear x1 //for testing speed difference between loading data 4 times and loading it once and copying it
 
-	first_roll_Xc_part1
+	first_roll_Xc
 	
 	load4toV0	x0 
 	
@@ -669,7 +669,7 @@ Compressiontimes4n_first_sum:
 
 	load1toV12	0, x1
 	
-	first_roll_Xc_part1
+	first_roll_Xc
 	
 	load4toV0	x0 
 	
