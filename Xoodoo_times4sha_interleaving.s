@@ -494,7 +494,7 @@
 	MOV	V23.16B, V11.16B*/
 .endm
 
-.macro load1copy4interleave reg
+.macro load1copy2interleave reg
 
 	# Load data to regs
 	LD4	{V0.S, V1.S, V2.S, V3.S}[0], [\reg]
@@ -517,6 +517,12 @@
 	MOV	V9.S[1], V9.S[0]
 	MOV	V10.S[1], V10.S[0]
 	MOV	V11.S[1], V11.S[0]
+.endm
+
+.macro load1copy4interleave reg
+
+	load1copy2interleave  \reg
+	
 	
 	MOV	V12.D[0], V0.D[0]
 	MOV	V13.D[0], V1.D[0]
@@ -532,9 +538,6 @@
 	MOV	V21.D[0], V9.D[0]
 	MOV	V22.D[0], V10.D[0]
 	MOV	V23.D[0], V11.D[0]
-	
-	
-	interleave
 .endm
 
 
@@ -1097,15 +1100,15 @@ Xoodootimes4sha_interleaving_6rounds_no_interleave:
 	
 
 .macro roll_mix A, B, C, D, dest, work1, work2
-	AND	\work1\().16B,	\A\().16B, V25.16B
-	AND	\work2\().16B,	\B\().16B, V26.16B
-	AND	V30.16B,	\C\().16B, V25.16B
-	AND	V31.16B,	\D\().16B, V26.16B
-	EOR	\work1\().16B,	\work1\().16B, \work2\().16B
-	EOR	V30.16B,	V30.16B, V31.16B
+	AND	\work1\().8B,	\A\().8B, V25.8B
+	AND	\work2\().8B,	\B\().8B, V26.8B
+	AND	V30.8B,		\C\().8B, V25.8B
+	AND	V31.8B,		\D\().8B, V26.8B
+	EOR	\work1\().8B,	\work1\().8B, \work2\().8B
+	EOR	V30.8B	,	V30.8B, V31.8B
 	MOV	\work1\().D[1],	V30.D[0]
 	
-	EOR	\dest\().16B, \dest\().16B, \work1\().16B
+	EOR	\dest\().16B,	\dest\().16B, \work1\().16B
 .endm
 
 .macro first_roll_Xc reg 
@@ -1288,7 +1291,8 @@ Compressiontimes4i_first:
 	MOVI	V24.4S,  #0x00
 	
 	//load1copy4 x1 // interleave version?
-	load1copy4interleave x1
+	load1copy2interleave x1
+	interleave
 	store4linear x2
 	
 	load4interleave x0
@@ -1425,6 +1429,7 @@ Expansiontimes4i_first:
 	SUB	x0, x0, #128
 	
 	load1copy4interleave x2
+	interleave
 	SUB	x2, x2, #32
 	store4linear	x2
 	
