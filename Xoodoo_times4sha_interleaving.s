@@ -1289,12 +1289,12 @@ Compressiontimes4i_first:
 	
 	//load1copy4 x1 // interleave version?
 	load1copy4interleave x1
-	store4 x2
+	store4linear x2
 	
 	load4interleave x0
 	interleave
 	
-	load4toV12 x2
+	load4linear_to_V12 x2
 	first_roll_Xc x2
 	
 	Xoodoo
