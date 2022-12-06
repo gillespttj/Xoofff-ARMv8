@@ -503,6 +503,31 @@
 	ADD	\reg, \reg, #16
 	LD4	{V8.S, V9.S, V10.S, V11.S}[0], [\reg]
 	
+	MOV	V12.S[0], V0.S[0]
+	MOV	V13.S[0], V1.S[0]
+	MOV	V14.S[0], V2.S[0]
+	MOV	V15.S[0], V3.S[0]
+	
+	MOV	V16.S[0], V4.S[0]
+	MOV	V17.S[0], V5.S[0]
+	MOV	V18.S[0], V6.S[0]
+	MOV	V19.S[0], V7.S[0]
+	
+	MOV	V20.S[0], V8.S[0]
+	MOV	V21.S[0], V9.S[0]
+	MOV	V22.S[0], V10.S[0]
+	MOV	V23.S[0], V11.S[0]
+.endm
+
+.macro load1copy4interleave reg
+
+	# Load data to regs
+	LD4	{V0.S, V1.S, V2.S, V3.S}[0], [\reg]
+	ADD	\reg, \reg, #16
+	LD4	{V4.S, V5.S, V6.S, V7.S}[0], [\reg]
+	ADD	\reg, \reg, #16
+	LD4	{V8.S, V9.S, V10.S, V11.S}[0], [\reg]
+	
 	MOV	V0.S[1], V0.S[0]
 	MOV	V1.S[1], V1.S[0]
 	MOV	V2.S[1], V2.S[0]
@@ -517,11 +542,6 @@
 	MOV	V9.S[1], V9.S[0]
 	MOV	V10.S[1], V10.S[0]
 	MOV	V11.S[1], V11.S[0]
-.endm
-
-.macro load1copy4interleave reg
-
-	load1copy2interleave  \reg
 	
 	
 	MOV	V12.D[0], V0.D[0]
@@ -1294,11 +1314,13 @@ Compressiontimes4i_first:
 	load1copy2interleave x1
 	interleave
 	store4linear x2
+	SUB	X2, X2, #128
 	
 	load4interleave x0
 	interleave
 	
 	load4linear_to_V12 x2
+	SUB	x2, x2, #128
 	first_roll_Xc x2
 	
 	Xoodoo
