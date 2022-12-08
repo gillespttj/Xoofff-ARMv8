@@ -919,7 +919,7 @@
 	//SUB	\reg\(), \reg\(), #128
 .endm
 
-.macro load4linear_to_V12 reg
+.macro load4linear_toV12 reg
 	/*LD1	{V12.2D}, [\reg]
 	ADD	\reg, \reg, #16
 	LD1	{V13.2D}, [\reg]
@@ -1039,7 +1039,7 @@
 	ADD	\reg\(), \reg\(), #32
 	ST4	{V4.D, V5.D, V6.D, V7.D}[0], [\reg]
 	ADD	\reg\(), \reg\(), #32
-	ST4	{V8.D, V9.D, V10.D, V11.D}[O], [\reg]
+	ST4	{V8.D, V9.D, V10.D, V11.D}[0], [\reg]
 	//SUB	\reg\(), \reg\(), #64
 .endm
 
@@ -1215,7 +1215,7 @@ Xoodootimes4sha_interleaving_6rounds_no_interleave:
 	MOV	V11.4S[\plane], \C3\().4S[0]
 .endm
 
-.macro copy_plane_to_V12 A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, plane
+.macro copy_plane_toV12 A0, A1, A2, A3, B0, B1, B2, B3, C0, C1, C2, C3, plane
 	MOV	V12.4S[\plane], \A0\().4S[0]
 	MOV	V13.4S[\plane], \A1\().4S[0]
 	MOV	V14.4S[\plane], \A2\().4S[0]
@@ -1249,9 +1249,9 @@ Xoodootimes4sha_interleaving_6rounds_no_interleave:
 	EOR3	V27.16B, V4.16B, V17.16B, V18.16B
 	EOR3	V28.16B, V8.16B, V19.16B, V20.16B
 	
-	copy_plane_to_V12 V4, V5, V6,  V7,  V8, V9, V10, V11, V1, V2,  V3,  V26, 0
+	copy_plane_toV12 V4, V5, V6,  V7,  V8, V9, V10, V11, V1, V2,  V3,  V26, 0
 	copy_plane_to_V0  V8, V9, V10, V11, V1, V2, V3,  V26, V5, V6,  V7,  V27, 1
-	copy_plane_to_V12 V1, V2, V3,  V26, V5, V6, V7,  V27, V9, V10, V11, V28, 1
+	copy_plane_toV12 V1, V2, V3,  V26, V5, V6, V7,  V27, V9, V10, V11, V28, 1
 .endm
 
 
@@ -1328,7 +1328,7 @@ Compressiontimes4i_first:
 	load4interleave x0
 	interleave
 	
-	load4linear_to_V12 x2
+	load4linear_toV12 x2
 	SUB	x2, x2, #128
 	first_roll_Xc x2
 	
@@ -1351,7 +1351,7 @@ Compressiontimes4i_first2:
 	load4interleave x0
 	interleave
 	
-	load4linear_to_V12 x2
+	load4linear_toV12 x2
 	
 	sum
 	
@@ -1367,7 +1367,7 @@ Compressiontimes4i:
 	load4interleave x0
 	interleave
 	
-	load4linear_to_V12 x1
+	load4linear_toV12 x1
 	SUB	x1, x1, #128
 	roll_Xc_second
 	store4linear_post_roll x1
@@ -1409,9 +1409,9 @@ Compressiontimes4i:
 	EOR3	V27.16B, V13.16B, V17.16B, V18.16B
 	EOR3	V28.16B, V14.16B, V19.16B, V20.16B
 	
-	copy_plane_to_V12 V4, V5, V6,  V7,  V8, V9, V10, V11, V1, V2,  V3,  V26, 0
+	copy_plane_toV12 V4, V5, V6,  V7,  V8, V9, V10, V11, V1, V2,  V3,  V26, 0
 	copy_plane_to_V0  V8, V9, V10, V11, V1, V2, V3,  V26, V5, V6,  V7,  V27, 1
-	copy_plane_to_V12 V1, V2, V3,  V26, V5, V6, V7,  V27, V9, V10, V11, V28, 1
+	copy_plane_toV12 V1, V2, V3,  V26, V5, V6, V7,  V27, V9, V10, V11, V28, 1
 .endm
 	
 
@@ -1460,12 +1460,12 @@ Expansiontimes4i_first:
 	SUB	x0, x0, #128
 	
 	load1copy4interleave x2
-	interleave
 	SUB	x2, x2, #32
+	interleave
 	store4linear	x2
 	//store2linear	x2
 	
-	load4linear_to_V12 x0
+	load4linear_toV12 x0
 	
 	sum
 	
@@ -1485,8 +1485,8 @@ Expansiontimes4i:
 	
 	Xoodoo
 	
-	load4linear_to_V12 X1
-	//load2linear_and_copy_toV12	X1
+	load4linear_toV12 X1
+	//load2linear_and_copy_toV12 X1
 	
 	sum
 	
