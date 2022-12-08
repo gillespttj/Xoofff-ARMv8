@@ -968,7 +968,7 @@
 	SUB	\reg\(), \reg\(), #144
 .endm
 
-.macro load2linear_and_copy reg
+.macro load2linear_and_copy_toV12 reg
 	LD4	{V12.D, V13.D, V14.D, V15.D}[0], [\reg]
 	ADD	\reg\(), \reg\(), #64
 	LD4	{V16.D, V17.D, V18.D, V19.D}[0], [\reg]
@@ -1032,6 +1032,15 @@
 	ADD	\reg\(), \reg\(), #64
 	ST1	{V8.2D, V9.2D, V10.2D, V11.2D}, [\reg]
 	//SUB	\reg\(), \reg\(), #128
+.endm
+
+.macro store2linear reg
+	ST4	{V0.D, V1.D, V2.D, V3.D}[0], [\reg]
+	ADD	\reg\(), \reg\(), #32
+	ST4	{V4.D, V5.D, V6.D, V7.D}[0], [\reg]
+	ADD	\reg\(), \reg\(), #32
+	ST4	{V8.D, V9.D, V10.D, V11.D}[O], [\reg]
+	//SUB	\reg\(), \reg\(), #64
 .endm
 
 .macro store4linear_post_roll reg
@@ -1371,12 +1380,12 @@ Compressiontimes4i:
 
 
 
-.macro roll_XE_first 
-	MOVI	V25.4S, #0x7
+.macro roll_Xe_first 
+	MOVI	V25.2S, #0x7
 
-	AND	V12.16B, V4.16B,  V8.16B 
-	AND	V13.16B, V8.16B,  V1.16B
-	AND	V14.16B, V1.16B,  V5.16B
+	AND	V12.8B, V4.8B,  V8.8B 
+	AND	V13.8B, V8.8B,  V1.8B
+	AND	V14.8B, V1.8B,  V5.8B
 	
 	SRI	V15.4S, V0.4S, #27
 	SRI	V16.4S, V4.4S, #19
@@ -1385,9 +1394,9 @@ Compressiontimes4i:
 	SRI	V19.4S, V8.4S, #27 
 	SRI	V20.4S, V1.4S, #19
 	
-	EOR	V12.16B, V12.16B, V25.16B
-	EOR	V13.16B, V13.16B, V25.16B
-	EOR	V14.16B, V14.16B, V25.16B
+	EOR	V12.8B, V12.8B, V25.8B
+	EOR	V13.8B, V13.8B, V25.8B
+	EOR	V14.8B, V14.8B, V25.8B
 	
 	SLI	V15.4S, V0.4S, #5
 	SLI	V16.4S, V4.4S, #13
@@ -1442,7 +1451,7 @@ Expansiontimes4i_first:
 	MOVI	V24.4S,  #0x00
 	
 	load1		x1
-	roll_XE_first
+	roll_Xe_first
 	interleave
 	store4linear	x3
 	
@@ -1454,6 +1463,7 @@ Expansiontimes4i_first:
 	interleave
 	SUB	x2, x2, #32
 	store4linear	x2
+	//store2linear	x2
 	
 	load4linear_to_V12 x0
 	
@@ -1471,13 +1481,12 @@ Expansiontimes4i:
 	
 	load4linear_pre_roll	X2
 	roll_Xe_second
-	//load4linear_to_V12 X2 
 	store4linear	X2
 	
 	Xoodoo
 	
 	load4linear_to_V12 X1
-	//load2linear_and_copy	X1
+	//load2linear_and_copy_toV12	X1
 	
 	sum
 	

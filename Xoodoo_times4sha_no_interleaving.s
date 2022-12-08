@@ -247,6 +247,16 @@
 	load1toV12	3, \reg
 .endm
 
+.macro load1toV0_4times reg
+	load1toV0	0, \reg
+	SUB	\reg\(), \reg\(), #32
+	load1toV0	1, \reg
+	SUB	\reg\(), \reg\(), #32
+	load1toV0	2, \reg
+	SUB	\reg\(), \reg\(), #32
+	load1toV0	3, \reg
+.endm
+
 
 
 
@@ -465,9 +475,9 @@
 	MOV	V11.\size\()[1], V11.\size\()[0]
 .endm 
 
-.macro load1toV0_4times reg 
+.macro load1copy4toV0 reg 
 	load1toV0	0, \reg
-	SUB	\reg\(), \reg\(), #32
+	//SUB	\reg\(), \reg\(), #32
 	copy_first_to_second_in_V0	S
 	copy_first_to_second_in_V0	D
 .endm
@@ -491,9 +501,9 @@
 
 .macro load1copy4toV12 reg // to rethink??
 	load1toV12	0, \reg
-	SUB	\reg\(), \reg\(), #32
-	//copy_first_to_second_in_V12	S //for testing speed difference between loading data 4 times and loading it once and copying it
-	//copy_first_to_second_in_V12	D //for testing speed difference between loading data 4 times and loading it once and copying it
+	//SUB	\reg\(), \reg\(), #32
+	copy_first_to_second_in_V12	S //for testing speed difference between loading data 4 times and loading it once and copying it
+	copy_first_to_second_in_V12	D //for testing speed difference between loading data 4 times and loading it once and copying it
 .endm
 
 
@@ -789,7 +799,7 @@ Compressiontimes4n_sum:
 
 
 .macro first_roll_Xe
-	MOVI	V31.4S, #0x7
+	MOVI	V31.2S, #0x7
 	
 	SRI	V15.2S, V0.2S, #27
 	SRI	V16.2S, V4.2S, #19
@@ -871,7 +881,7 @@ Compressiontimes4n_sum:
 
 Expansiontimes4n_first:
 
-	load1toV0_4times	x0
+	load1toV0		0, x0
 
 	first_roll_Xe
 	
@@ -881,6 +891,9 @@ Expansiontimes4n_first:
 	Xoodoo
 	
 	load1toV12_4times	x1
+	//load4toV12linear 	x1 //for performance comparison only
+	SUB x1, x1, #32
+	store4toV12linear	x1
 	
 	sum
 	
@@ -893,7 +906,7 @@ Expansiontimes4n_first:
 
 Expansiontimes4n_first2:
 
-	load1toV0_4times	x0
+	load1toV0		0, x0
 
 	first_roll_Xe
 	
@@ -903,6 +916,8 @@ Expansiontimes4n_first2:
 	Xoodoo
 	
 	load1copy4toV12		x1
+	SUB x1, x1, #32
+	store4toV12linear	x1
 	
 	sum
 	
@@ -1034,7 +1049,8 @@ Expansiontimes4n:
 	
 	XoodooPostRoll
 	
-	load1toV12_4times x0
+	//load1toV12_4times x0
+	load4toV12linear x0
 
 	sum
 	
