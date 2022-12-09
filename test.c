@@ -352,7 +352,7 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			Expansiontimes4n_first2(a, k, c);
 			Expansiontimes4n(k, c);
-			Expansiontimes4n(k, c);
+			//Expansiontimes4n(k, c);
 			store_n(b);
 			
 			print_results
@@ -370,7 +370,7 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			Expansiontimes4i_first(b, a, k, c);
 			Expansiontimes4i(b, k, c);
-			Expansiontimes4i(b, k, c);
+			//Expansiontimes4i(b, k, c);
 			store_i(b);
 			
 			print_results

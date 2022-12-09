@@ -1043,7 +1043,7 @@
 	//SUB	\reg\(), \reg\(), #64
 .endm
 
-.macro store4linear_post_roll reg
+.macro store4linear_post_roll_toV12 reg
 	/*ST1	{V17.2D}, [\reg]
 	ADD	\reg\(), \reg\(), #16
 	ST1	{V18.2D}, [\reg]
@@ -1081,6 +1081,20 @@
 	ST1	{V14.2D, V15.2D}, [\reg]
 	ADD	\reg\(), \reg\(), #32
 	ST1	{V12.2D, V13.2D}, [\reg]
+.endm
+
+.macro store4linear_post_roll reg
+	ST1	{V5.4S, V6.4S, V7.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #48
+	ST1	{V4.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST1	{V9.4S, V10.4S, V11.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #48
+	ST1	{V8.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #16
+	ST1	{V2.4S, V3.4S}, [\reg]
+	ADD	\reg\(), \reg\(), #32
+	ST1	{V0.4S, V1.4S}, [\reg]
 .endm
 
 
@@ -1370,7 +1384,7 @@ Compressiontimes4i:
 	load4linear_toV12 x1
 	SUB	x1, x1, #128
 	roll_Xc_second
-	store4linear_post_roll x1
+	store4linear_post_roll_toV12 x1
 	
 	Xoodoo
 	
@@ -1444,6 +1458,7 @@ Compressiontimes4i:
 .endm
 
 
+
 .global Expansiontimes4i_first
 .type Expansiontimes4i_first,%function
 
@@ -1472,6 +1487,123 @@ Expansiontimes4i_first:
 	
 	RET
 
+
+
+
+
+.macro roll_Xe_second2
+	MOV	V25.D[0], X3
+	MOV	V25.D[1], V25.D[0]
+	
+	AND	V12.16B, V4.16B, V8.16B 
+	AND	V13.16B, V5.16B, V9.16B
+	AND	V14.16B, V8.16B, V1.16B
+	AND	V15.16B, V1.16B, V5.16B
+	
+
+	XAR	V16.2D, V0.2D, V24.2D, #54 
+	XAR	V17.2D, V4.2D, V25.2D, #38
+	
+	XAR	V18.2D, V1.2D, V24.2D, #54 
+	XAR	V19.2D, V5.2D, V25.2D, #38
+	
+	XAR	V20.2D, V4.2D, V24.2D, #54 
+	XAR	V21.2D, V8.2D, V25.2D, #38
+	
+	XAR	V22.2D, V8.2D, V24.2D, #54 
+	XAR	V23.2D, V1.2D, V25.2D, #38
+	
+	EOR3	V0.16B, V12.16B, V16.16B, V17.16B
+	EOR3	V1.16B, V13.16B, V18.16B, V19.16B
+	EOR3	V4.16B, V14.16B, V20.16B, V21.16B
+	EOR3	V8.16B, V15.16B, V22.16B, V23.16B
+.endm
+
+.macro theta_rho_w_2_post_roll
+	EOR3	V12.16B, V4.16B, V8.16B,  V1.16B
+	EOR3	V13.16B, V5.16B, V9.16B,  V2.16B
+	EOR3	V14.16B, V6.16B, V10.16B, V3.16B
+	EOR3	V15.16B, V7.16B, V11.16B, V0.16B
+	XAR	V16.2D, V12.2D, V24.2D, #46
+	XAR	V17.2D, V13.2D, V24.2D, #46
+	XAR	V18.2D, V14.2D, V24.2D, #46
+	XAR	V19.2D, V15.2D, V24.2D, #46
+	XAR	V20.2D, V12.2D, V16.2D, #54
+	XAR	V21.2D, V13.2D, V17.2D, #54
+	XAR	V22.2D, V14.2D, V18.2D, #54
+	XAR	V23.2D, V15.2D, V19.2D, #54
+	EOR	V12.16B, V9.16B,  V20.16B 
+	EOR	V13.16B, V10.16B, V21.16B
+	EOR	V14.16B, V11.16B, V22.16B
+	EOR	V15.16B, V8.16B,  V23.16B
+	XAR	V8.2D,  V2.2D, V20.2D, #42
+	XAR	V9.2D,  V3.2D, V21.2D, #42
+	XAR	V10.2D, V0.2D, V22.2D, #42
+	XAR	V11.2D, V1.2D, V23.2D, #42
+	EOR	V0.16B, V5.16B, V20.16B
+	EOR	V1.16B, V6.16B, V21.16B
+	EOR	V2.16B, V7.16B, V22.16B
+	EOR	V3.16B, V4.16B, V23.16B
+.endm
+
+.macro rho_w_1_chi_post_roll
+	BCAX	V16.16B, V15.16B, V0.16B, V8.16B
+	BCAX	V17.16B, V12.16B, V1.16B, V9.16B
+	BCAX	V18.16B, V13.16B, V2.16B, V10.16B
+	BCAX	V19.16B, V14.16B, V3.16B, V11.16B
+	BCAX	V20.16B, V8.16B,  V15.16B, V0.16B
+	BCAX	V21.16B, V9.16B,  V12.16B, V1.16B
+	BCAX	V22.16B, V10.16B, V13.16B, V2.16B
+	BCAX	V23.16B, V11.16B, V14.16B, V3.16B
+	BCAX	V0.16B, V0.16B, V8.16B,  V15.16B
+	BCAX	V1.16B, V1.16B, V9.16B,  V12.16B
+	BCAX	V2.16B, V2.16B, V10.16B, V13.16B
+	BCAX	V3.16B, V3.16B, V11.16B, V14.16B
+.endm
+
+.macro XoodooPostRoll
+	theta_rho_w_2_post_roll
+	MOV	X3, #0x3C00
+	iota
+	rho_w_1_chi_post_roll
+	rho_e
+	
+	theta_rho_w_2
+	MOV	X3, #0x0CF0
+	iota
+	rho_w_1_chi
+	rho_e
+	
+	theta_rho_w_2
+	MOV	X3, #0xFC000
+	iota
+	rho_w_1_chi
+	rho_e
+	
+	theta_rho_w_2
+	//MOV	X3, #0xFF00
+	//iota
+	MOVI	V25.2D, #0xFF00
+	EOR	V0.16B, V25.16B, V0.16B
+	rho_w_1_chi
+	rho_e
+	
+	theta_rho_w_2
+	MOV	X3, #0xCC00
+	MOVK	X3, #0x0003, LSL #16
+	iota
+	rho_w_1_chi
+	rho_e
+	
+	theta_rho_w_2
+	MOV	X3, #0x030C
+	iota
+	rho_w_1_chi
+	rho_e
+.endm
+
+
+
 .global Expansiontimes4i
 .type Expansiontimes4i,%function
 
@@ -1479,14 +1611,30 @@ Expansiontimes4i:
 	MOV	X3, 0xFC000000000
 	MOVI	V24.4S,  #0x00
 	
+	
+	/*///	old implementation
 	load4linear_pre_roll	X2
 	roll_Xe_second
 	store4linear	X2
 	
 	Xoodoo
+	// */
 	
+	
+	////	new implementation
+	load4linear		x2
+	SUB	x2, x2, #128
+	roll_Xe_second2 
+	store4linear_post_roll	X2
+	
+	XoodooPostRoll 
+	// */
+	
+	
+	////	last part of both implementations
 	load4linear_toV12 X1
 	//load2linear_and_copy_toV12 X1
+	
 	
 	sum
 	
