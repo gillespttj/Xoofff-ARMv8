@@ -968,12 +968,16 @@
 	SUB	\reg\(), \reg\(), #144
 .endm
 
-.macro load2linear_and_copy_toV12 reg
+.macro load2linear_toV12 reg
 	LD4	{V12.D, V13.D, V14.D, V15.D}[0], [\reg]
-	ADD	\reg\(), \reg\(), #64
+	ADD	\reg\(), \reg\(), #32
 	LD4	{V16.D, V17.D, V18.D, V19.D}[0], [\reg]
-	ADD	\reg\(), \reg\(), #64
+	ADD	\reg\(), \reg\(), #32
 	LD4	{V20.D, V21.D, V22.D, V23.D}[0], [\reg]
+.endm
+
+.macro load2linear_and_copy_toV12 reg
+	load2linear_toV12 \reg
 	
 	MOV	V12.D[1], V12.D[0]
 	MOV	V13.D[1], V13.D[0]
@@ -1336,14 +1340,21 @@ Compressiontimes4i_first:
 	//load1copy4 x1 // interleave version?
 	load1copy2interleave x1
 	interleave
-	store4linear x2
-	SUB	X2, X2, #128
+	
+	//store4linear x2
+	//SUB	X2, X2, #128
+	store2linear x2
+	SUB X2, X2, #64
+	
 	
 	load4interleave x0
 	interleave
 	
-	load4linear_toV12 x2
-	SUB	x2, x2, #128
+	//load4linear_toV12 x2
+	//SUB	x2, x2, #128
+	load2linear_toV12 x2
+	SUB	x2, x2, #64
+	
 	first_roll_Xc x2
 	
 	Xoodoo
@@ -1612,7 +1623,7 @@ Expansiontimes4i:
 	MOVI	V24.4S,  #0x00
 	
 	
-	/*///	old implementation
+	////	old implementation
 	load4linear_pre_roll	X2
 	roll_Xe_second
 	store4linear	X2
@@ -1621,7 +1632,7 @@ Expansiontimes4i:
 	// */
 	
 	
-	////	new implementation
+	/*///	new implementation
 	load4linear		x2
 	SUB	x2, x2, #128
 	roll_Xe_second2 
