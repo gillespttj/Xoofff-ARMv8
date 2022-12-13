@@ -1623,7 +1623,7 @@ Expansiontimes4i:
 	MOVI	V24.4S,  #0x00
 	
 	
-	////	old implementation
+	/*///	old implementation
 	load4linear_pre_roll	X2
 	roll_Xe_second
 	store4linear	X2
@@ -1632,7 +1632,7 @@ Expansiontimes4i:
 	// */
 	
 	
-	/*///	new implementation
+	////	new implementation
 	load4linear		x2
 	SUB	x2, x2, #128
 	roll_Xe_second2 
