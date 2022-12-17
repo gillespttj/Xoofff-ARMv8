@@ -32,9 +32,9 @@ void Compressiontimes4n(unsigned int *src, unsigned int *work_mem);
 void Compressiontimes4n_first_sum(unsigned int *src, unsigned int *k, unsigned int *work_mem, unsigned int *sum); 
 void Compressiontimes4n_sum(unsigned int *src, unsigned int *work_mem, unsigned int *sum);
 
-void Expansiontimes4n_first(unsigned int *sum, unsigned int *k, unsigned int *work_mem); 
-void Expansiontimes4n_first2(unsigned int *sum, unsigned int *k, unsigned int *work_mem); 
-void Expansiontimes4n(unsigned int *k, unsigned int *work_mem);
+void Expansiontimes4n_first(unsigned int *sum, unsigned int *k, unsigned int *work_mem, unsigned int *work_mem2); 
+void Expansiontimes4n_first2(unsigned int *sum, unsigned int *k, unsigned int *work_mem, unsigned int *work_mem2); 
+void Expansiontimes4n(unsigned int *k, unsigned int *work_mem, unsigned int *work_mem2);
 
 void store_n(unsigned int *dest);
 

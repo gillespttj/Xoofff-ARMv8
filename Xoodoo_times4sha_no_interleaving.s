@@ -892,8 +892,8 @@ Expansiontimes4n_first:
 	
 	load1toV12_4times	x1
 	//load4toV12linear 	x1 //for performance comparison only
-	SUB x1, x1, #32
-	store4toV12linear	x1
+	//SUB x1, x1, #32
+	store4toV12linear	x3
 	
 	sum
 	
@@ -916,8 +916,8 @@ Expansiontimes4n_first2:
 	Xoodoo
 	
 	load1copy4toV12		x1
-	SUB x1, x1, #32
-	store4toV12linear	x1
+	//SUB x1, x1, #32
+	store4toV12linear	x3
 	
 	sum
 	
@@ -1049,9 +1049,9 @@ Expansiontimes4n:
 	
 	XoodooPostRoll
 	
-	//load1toV12_4times x0
-	//load1copy4toV12 x0
-	load4toV12linear x0
+	//load1toV12_4times x2
+	//load1copy4toV12 x2
+	load4toV12linear x2
 
 	sum
 	

@@ -114,7 +114,8 @@ int main(int argc, char *argv[])
 		
 		unsigned int* b = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 		
-		unsigned int* k = (unsigned int*) malloc(4*12*sizeof(unsigned int)); 
+		unsigned int* k = (unsigned int*) malloc(12*sizeof(unsigned int)); 
+		//unsigned int* k = (unsigned int*) malloc(4*12*sizeof(unsigned int)); 
 			//4 for saving interleaved k value of k in exp_i
 		
 		for (int i=0; i<12; i++) k[i] = 3*i+1;//12-i;
@@ -332,9 +333,10 @@ int main(int argc, char *argv[])
 		
 		if (exp_n){
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
-			Expansiontimes4n_first(a, k, c);
-			Expansiontimes4n(k, c);
-			Expansiontimes4n(k, c);
+			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			Expansiontimes4n_first(a, k, c, d);
+			Expansiontimes4n(k, c, d);
+			Expansiontimes4n(k, c, d);
 			store_n(b);
 			
 			print_results
@@ -346,13 +348,15 @@ int main(int argc, char *argv[])
 				//printf("k %d | %x:%x-%x:%x\n", i, k[4*i], k[4*i+1], k[4*i+2], k[4*i+3]);
 			}
 			free(c);
+			free(d);
 		}
 		
 		if (exp_n2){
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
-			Expansiontimes4n_first2(a, k, c);
-			Expansiontimes4n(k, c);
-			Expansiontimes4n(k, c);
+			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			Expansiontimes4n_first2(a, k, c, d);
+			Expansiontimes4n(k, c, d);
+			Expansiontimes4n(k, c, d);
 			store_n(b);
 			
 			print_results
@@ -364,13 +368,15 @@ int main(int argc, char *argv[])
 				//printf("k %d | %x:%x-%x:%x\n", i, k[4*i], k[4*i+1], k[4*i+2], k[4*i+3]);
 			}
 			free(c);
+			free(d);
 		}
 		
 		if (exp_i){
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
-			Expansiontimes4i_first(b, a, k, c);
-			Expansiontimes4i(b, k, c);
-			Expansiontimes4i(b, k, c);
+			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			Expansiontimes4i_first(b, a, k, c, d);
+			Expansiontimes4i(b, k, c, d);
+			Expansiontimes4i(b, k, c, d);
 			store_i(b);
 			
 			print_results
@@ -382,6 +388,7 @@ int main(int argc, char *argv[])
 				//printf("k %d | %x:%x-%x:%x\n", i, k[4*i], k[4*i+1], k[4*i+2], k[4*i+3]);
 			}
 			free(c);
+			free(d);
 		}
 		
 		
@@ -402,6 +409,7 @@ int main(int argc, char *argv[])
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
 			printf("Time spend for %d times: %f ns\n", MAX_ROUNDS, (endTime-startTime-computeTime)*1.0e9); // */
+			free(c);
 		}
 		if (comp_i_first2) {
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
@@ -409,6 +417,7 @@ int main(int argc, char *argv[])
 				thousand(Compressiontimes4i_first2(a, k, c));
 			measureTimingEnd
 			print_timing_results
+			free(c);
 		}
 		if (comp_i_second) {
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
@@ -426,6 +435,7 @@ int main(int argc, char *argv[])
 			endTime = (float)clock()/CLOCKS_PER_SEC;
 			
 			printf("Time spend for %d times: %f ns\n", MAX_ROUNDS, (endTime-startTime-computeTime)*1.0e9); // */
+			free(c);
 		}
 		
 		if (comp_n_first) {
@@ -441,43 +451,59 @@ int main(int argc, char *argv[])
 				thousand(Compressiontimes4n(a, c));
 			measureTimingEnd
 			print_timing_results
+			free(c);
 		}
 		
 		if (exp_i_first) {
-			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			measureTimingBeginDeclared
-				thousand(Expansiontimes4i_first(b, a, k, c));
+				thousand(Expansiontimes4i_first(b, a, k, c, d));
 			measureTimingEnd
 			print_timing_results
+			free(c);
+			free(d);
 		}
 		if (exp_i_second) {
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
+			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			measureTimingBeginDeclared
-				thousand(Expansiontimes4i(b, k, c));
+				thousand(Expansiontimes4i(b, k, c, d));
 			measureTimingEnd
 			print_timing_results
+			free(c);
+			free(d);
 		}
 		
 		if (exp_n_first) {
-			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			measureTimingBeginDeclared
-				thousand(Expansiontimes4n_first(a, k, c));
+				thousand(Expansiontimes4n_first(a, k, c, d));
 			measureTimingEnd
 			print_timing_results
+			free(c);
+			free(d);
 		}
 		if (exp_n_first2) {
-			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			measureTimingBeginDeclared
-				thousand(Expansiontimes4n_first2(a, k, c));
+				thousand(Expansiontimes4n_first2(a, k, c, d));
 			measureTimingEnd
 			print_timing_results
+			free(c);
+			free(d);
 		}
 		if (exp_n_second) {
-			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
+			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
+			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			measureTimingBeginDeclared
-				thousand(Expansiontimes4n(k, c));
+				thousand(Expansiontimes4n(k, c, d));
 			measureTimingEnd
 			print_timing_results
+			free(c);
+			free(d);
 		}
 		
 		

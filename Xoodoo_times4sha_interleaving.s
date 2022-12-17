@@ -28,8 +28,8 @@
 .endm
 
 .macro iota
-	MOV	V25.2D[0], X3
-	MOV	V25.2D[1], X3
+	MOV	V25.2D[0], X5
+	MOV	V25.2D[1], X5
 	EOR	V0.16B, V0.16B, V25.16B
 .endm
 
@@ -104,25 +104,25 @@
 .macro Xoodoo
 	
 	theta_rho_w_2
-	MOV	X3, #0x3C00
+	MOV	X5, #0x3C00
 	iota
 	rho_w_1_chi
 	rho_e
 	
 	theta_rho_w_2
-	MOV	X3, #0x0CF0
+	MOV	X5, #0x0CF0
 	iota
 	rho_w_1_chi
 	rho_e
 	
 	theta_rho_w_2
-	MOV	X3, #0xFC000
+	MOV	X5, #0xFC000
 	iota
 	rho_w_1_chi
 	rho_e
 	
 	theta_rho_w_2
-	//MOV	X3, #0xFF00
+	//MOV	X5, #0xFF00
 	//iota
 	MOVI	V25.2D, #0xFF00
 	EOR	V0.16B, V25.16B, V0.16B
@@ -130,14 +130,14 @@
 	rho_e
 	
 	theta_rho_w_2
-	MOV	X3, #0xCC00
-	MOVK	X3, #0x0003, LSL #16
+	MOV	X5, #0xCC00
+	MOVK	X5, #0x0003, LSL #16
 	iota
 	rho_w_1_chi
 	rho_e
 	
 	theta_rho_w_2
-	MOV	X3, #0x030C
+	MOV	X5, #0x030C
 	iota
 	rho_w_1_chi
 	rho_e
@@ -1441,7 +1441,7 @@ Compressiontimes4i:
 	
 
 .macro roll_Xe_second
-	MOV	V25.D[0], X3
+	MOV	V25.D[0], X5
 	MOV	V25.D[1], V25.D[0]
 	
 	AND	V12.16B, V7.16B, V11.16B 
@@ -1488,8 +1488,8 @@ Expansiontimes4i_first:
 	load1copy4interleave x2
 	SUB	x2, x2, #32
 	interleave
-	store4linear	x2
-	//store2linear	x2
+	store4linear	x4
+	//store2linear	x4
 	
 	load4linear_toV12 x0
 	
@@ -1503,7 +1503,7 @@ Expansiontimes4i_first:
 
 
 .macro roll_Xe_second2
-	MOV	V25.D[0], X3
+	MOV	V25.D[0], X5
 	MOV	V25.D[1], V25.D[0]
 	
 	AND	V12.16B, V4.16B, V8.16B 
@@ -1574,25 +1574,25 @@ Expansiontimes4i_first:
 
 .macro XoodooPostRoll
 	theta_rho_w_2_post_roll
-	MOV	X3, #0x3C00
+	MOV	X5, #0x3C00
 	iota
 	rho_w_1_chi_post_roll
 	rho_e
 	
 	theta_rho_w_2
-	MOV	X3, #0x0CF0
+	MOV	X5, #0x0CF0
 	iota
 	rho_w_1_chi
 	rho_e
 	
 	theta_rho_w_2
-	MOV	X3, #0xFC000
+	MOV	X5, #0xFC000
 	iota
 	rho_w_1_chi
 	rho_e
 	
 	theta_rho_w_2
-	//MOV	X3, #0xFF00
+	//MOV	X5, #0xFF00
 	//iota
 	MOVI	V25.2D, #0xFF00
 	EOR	V0.16B, V25.16B, V0.16B
@@ -1600,14 +1600,14 @@ Expansiontimes4i_first:
 	rho_e
 	
 	theta_rho_w_2
-	MOV	X3, #0xCC00
-	MOVK	X3, #0x0003, LSL #16
+	MOV	X5, #0xCC00
+	MOVK	X5, #0x0003, LSL #16
 	iota
 	rho_w_1_chi
 	rho_e
 	
 	theta_rho_w_2
-	MOV	X3, #0x030C
+	MOV	X5, #0x030C
 	iota
 	rho_w_1_chi
 	rho_e
@@ -1619,14 +1619,14 @@ Expansiontimes4i_first:
 .type Expansiontimes4i,%function
 
 Expansiontimes4i:	
-	MOV	X3, 0xFC000000000
+	MOV	X5, 0xFC000000000
 	MOVI	V24.4S,  #0x00
 	
 	
 	/*///	old implementation
 	load4linear_pre_roll	X2
 	roll_Xe_second
-	store4linear	X2
+	store4linear		X2
 	
 	Xoodoo
 	// */
@@ -1643,8 +1643,8 @@ Expansiontimes4i:
 	
 	
 	////	last part of both implementations
-	load4linear_toV12 X1
-	//load2linear_and_copy_toV12 X1
+	load4linear_toV12 X3
+	//load2linear_and_copy_toV12 X3
 	
 	
 	sum
