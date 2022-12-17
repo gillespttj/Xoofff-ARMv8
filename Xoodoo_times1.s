@@ -181,7 +181,7 @@
 
 
 
-.macro load_toV0 reg
+.macro load_toV4 reg
 	LDP	W4,  W5,  [\reg]
 	LDP	W6,  W7,  [\reg\(), #8]
 	LDP	W8,  W9,  [\reg\(), #16]
@@ -190,7 +190,7 @@
 	LDP	W14, W15, [\reg\(), #40]
 .endm
 
-.macro store_toV0 reg
+.macro store_toV4 reg
 	STP	W4,  W5,  [\reg]
 	STP	W6,  W7,  [\reg\(), #8]
 	STP	W8,  W9,  [\reg\(), #16]
@@ -207,11 +207,11 @@
 .type Xoodootimes1_PermuteAll_6rounds, %function
 Xoodootimes1_PermuteAll_6rounds:
 
-	load_toV0	x0
+	load_toV4	x0
 	
 	Xoodoo
 	
-	store_toV0	x1
+	store_toV4	x1
 
 	RET
 
@@ -239,11 +239,11 @@ Xoodootimes1_PermuteAll_6rounds:
 .type Compressiontimes1, %function
 Compressiontimes1:
 
-	load_toV0	x0
+	load_toV4	x0
 	
 	Xoodoo
 	
-	store_toV0	x1
+	store_toV4	x1
 
 
 
