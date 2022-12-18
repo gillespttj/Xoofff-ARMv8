@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 			xoodoo4no_sha_no_interleave=0, xoodoo1=0, xoodoo1ref=0, comp_i=0, comp_i2=0, comp_n=0, exp_n=0,
 			exp_n2=0, exp_i=0, help=0, comp_i_first=0, comp_i_first2=0, comp_i_second=0, comp_n_first=0,
 			comp_n_second=0, exp_i_first=0, exp_i_second=0, exp_n_first=0, exp_n_first2=0, exp_n_second=0,
-			xoodoo4sha_interleave_no_interleave=0;
+			xoodoo4sha_interleave_no_interleave=0, comp1=0, exp1=0;
 		
 		for(int i=1; i<argc; i++)
 		{
@@ -71,9 +71,11 @@ int main(int argc, char *argv[])
 			else if(strcmp(argv[1], "compI") == 0) comp_i = 1;
 			else if(strcmp(argv[1], "compI2") == 0) comp_i2 = 1;
 			else if(strcmp(argv[1], "compN") == 0) comp_n = 1;
+			else if(strcmp(argv[1], "comp1") == 0) comp1 = 1;
 			else if(strcmp(argv[1], "expI") == 0) exp_i = 1;
 			else if(strcmp(argv[1], "expN") == 0) exp_n = 1;
 			else if(strcmp(argv[1], "expN2") == 0) exp_n2 = 1;
+			else if(strcmp(argv[1], "exp1") == 0) exp1 = 1;
 			else if(strcmp(argv[1], "compIfirst") == 0) comp_i_first = 1;
 			else if(strcmp(argv[1], "compIfirst2") == 0) comp_i_first2 = 1;
 			else if(strcmp(argv[1], "compIsecond") == 0) comp_i_second = 1;
@@ -319,8 +321,8 @@ int main(int argc, char *argv[])
 			}
 			
 			Compressiontimes4n_first(a, k, c);
-			Compressiontimes4n(a, c);
-			Compressiontimes4n(a, c);
+			//Compressiontimes4n(a, c);
+			//Compressiontimes4n(a, c);
 			store_n(b);
 			
 			print_results
@@ -331,12 +333,24 @@ int main(int argc, char *argv[])
 			free(c);
 		}
 		
+		if (comp1){
+			Compressiontimes1first(a, k, b);
+			for(int i=1; i<4; i++)
+				Compressiontimes1(a, k, b+i*12);
+			
+			print_results
+			
+			for (int i=0; i<12; i++){
+				//printf("k %d | %x:%x-%x:%x\n", i, k[4*i], k[4*i+1], k[4*i+2], k[4*i+3]);
+			}
+		}
+		
 		if (exp_n){
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			Expansiontimes4n_first(a, k, c, d);
-			Expansiontimes4n(k, c, d);
-			Expansiontimes4n(k, c, d);
+			//Expansiontimes4n(k, c, d);
+			//Expansiontimes4n(k, c, d);
 			store_n(b);
 			
 			print_results
@@ -389,6 +403,18 @@ int main(int argc, char *argv[])
 			}
 			free(c);
 			free(d);
+		}
+		
+		if (exp1){
+			Expansiontimes1first(a, k, b);
+			for(int i=1; i<4; i++)
+				Expansiontimes1(a, k, b+i*12);
+			
+			print_results
+			
+			for (int i=0; i<12; i++){
+				//printf("k %d | %x:%x-%x:%x\n", i, k[4*i], k[4*i+1], k[4*i+2], k[4*i+3]);
+			}
 		}
 		
 		
