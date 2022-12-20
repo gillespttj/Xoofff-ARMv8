@@ -1400,8 +1400,56 @@ Compressiontimes4i:
 	Xoodoo
 	
 	RET
+	
+	
+.global Compressiontimes4i_first_sum
+.type Compressiontimes4i_first_sum,%function
 
+Compressiontimes4i_first_sum:
+	MOVI	V24.4S,  #0x00
+	
+	load1 x1
+	first_roll_Xc_v2	x2
+	interleave
+	store4linear		x2
+	SUB	x2, x2, #128
+	
+	load4interleave		x0
+	interleave
+	
+	load4linear_toV12 	x2
+	
+	sum
+	
+	Xoodoo
+	
+	store4linear		x3
+	
+	RET
 
+.global Compressiontimes4i_sum
+.type Compressiontimes4i_sum,%function
+
+Compressiontimes4i_sum:
+	
+	load4interleave		x0
+	interleave
+	
+	load4linear_toV12	x1
+	SUB	x1, x1, #128
+	roll_Xc_second
+	store4linear_post_roll_toV12 x1
+	
+	Xoodoo
+	
+	load4linear_toV12 	x2
+	
+	sum
+	
+	store4linear		x2
+	
+	RET
+	
 
 
 
@@ -1492,8 +1540,11 @@ Expansiontimes4i_first:
 	//store2linear	x4
 	
 	load4linear_toV12 x0
+	SUB	x0, x0, #128
 	
 	sum
+	
+	deinterleave_store x0
 	
 	
 	RET
@@ -1624,32 +1675,32 @@ Expansiontimes4i:
 	
 	
 	/*///	old implementation
-	load4linear_pre_roll	X2
+	load4linear_pre_roll	X1
 	roll_Xe_second
-	store4linear		X2
+	store4linear		X1
 	
 	Xoodoo
 	// */
 	
 	
 	////	new implementation
-	load4linear		x2
-	SUB	x2, x2, #128
+	load4linear		x1
+	SUB	x1, x1, #128
 	roll_Xe_second2 
-	store4linear_post_roll	X2
+	store4linear_post_roll	X1
 	
 	XoodooPostRoll 
 	// */
 	
 	
 	////	last part of both implementations
-	load4linear_toV12 X3
-	//load2linear_and_copy_toV12 X3
+	load4linear_toV12 	X2
+	//load2linear_and_copy_toV12 X2
 	
 	
 	sum
 	
-	//deinterleave_store x0
+	deinterleave_store	x0
 	
 	RET
 

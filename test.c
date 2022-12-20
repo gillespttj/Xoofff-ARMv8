@@ -321,8 +321,8 @@ int main(int argc, char *argv[])
 			}
 			
 			Compressiontimes4n_first(a, k, c);
-			//Compressiontimes4n(a, c);
-			//Compressiontimes4n(a, c);
+			Compressiontimes4n(a, c);
+			Compressiontimes4n(a, c);
 			store_n(b);
 			
 			print_results
@@ -348,10 +348,10 @@ int main(int argc, char *argv[])
 		if (exp_n){
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));
-			Expansiontimes4n_first(a, k, c, d);
-			//Expansiontimes4n(k, c, d);
-			//Expansiontimes4n(k, c, d);
-			store_n(b);
+			Expansiontimes4n_first(b, a, k, c, d);
+			Expansiontimes4n(b, c, d);
+			Expansiontimes4n(b, c, d);
+			//store_n(b);
 			
 			print_results
 			
@@ -368,10 +368,10 @@ int main(int argc, char *argv[])
 		if (exp_n2){
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));
-			Expansiontimes4n_first2(a, k, c, d);
-			Expansiontimes4n(k, c, d);
-			Expansiontimes4n(k, c, d);
-			store_n(b);
+			Expansiontimes4n_first2(b, a, k, c, d);
+			Expansiontimes4n(b, c, d);
+			Expansiontimes4n(b, c, d);
+			//store_n(b);
 			
 			print_results
 			
@@ -389,9 +389,9 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			Expansiontimes4i_first(b, a, k, c, d);
-			Expansiontimes4i(b, k, c, d);
-			Expansiontimes4i(b, k, c, d);
-			store_i(b);
+			Expansiontimes4i(b, c, d);
+			Expansiontimes4i(b, c, d);
+			//store_i(b);
 			
 			print_results
 			
@@ -423,7 +423,8 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 				
 			measureTimingBeginDeclared
-				thousand(Compressiontimes4i_first(a, k, c));
+				thousand(Compressiontimes4i_first_sum(a, k, c, b));
+				//thousand(Compressiontimes4i_first(a, k, c));
 			measureTimingEnd
 			print_timing_results // */
 			
@@ -449,7 +450,7 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			
 			measureTimingBeginDeclared
-				thousand(Compressiontimes4i(a, c));
+				thousand(Compressiontimes4i_sum(a, c, b));
 			measureTimingEnd
 			print_timing_results // */
 			
@@ -467,14 +468,14 @@ int main(int argc, char *argv[])
 		if (comp_n_first) {
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			measureTimingBeginDeclared
-				thousand(Compressiontimes4n_first(a, k, c));
+				thousand(Compressiontimes4n_first_sum(a, k, c, b));
 			measureTimingEnd
 			print_timing_results
 		}
 		if (comp_n_second) {
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			measureTimingBeginDeclared
-				thousand(Compressiontimes4n(a, c));
+				thousand(Compressiontimes4n_sum(a, c, b));
 			measureTimingEnd
 			print_timing_results
 			free(c);
@@ -494,7 +495,7 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			measureTimingBeginDeclared
-				thousand(Expansiontimes4i(b, k, c, d));
+				thousand(Expansiontimes4i(b, c, d));
 			measureTimingEnd
 			print_timing_results
 			free(c);
@@ -505,7 +506,7 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			measureTimingBeginDeclared
-				thousand(Expansiontimes4n_first(a, k, c, d));
+				thousand(Expansiontimes4n_first(b, a, k, c, d));
 			measureTimingEnd
 			print_timing_results
 			free(c);
@@ -515,7 +516,7 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			measureTimingBeginDeclared
-				thousand(Expansiontimes4n_first2(a, k, c, d));
+				thousand(Expansiontimes4n_first2(b, a, k, c, d));
 			measureTimingEnd
 			print_timing_results
 			free(c);
@@ -525,7 +526,7 @@ int main(int argc, char *argv[])
 			unsigned int* c = (unsigned int*) malloc(4*12*sizeof(unsigned int));
 			unsigned int* d = (unsigned int*) malloc(4*12*sizeof(unsigned int));	
 			measureTimingBeginDeclared
-				thousand(Expansiontimes4n(k, c, d));
+				thousand(Expansiontimes4n(b, c, d));
 			measureTimingEnd
 			print_timing_results
 			free(c);

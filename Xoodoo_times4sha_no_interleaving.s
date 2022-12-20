@@ -771,13 +771,10 @@ Compressiontimes4n_sum:
 
 	load4toV0		x0
 	
-	//load4toV12_V2	x1
 	load4toV12linear 	x1
 
 	roll_Xc
 	
-	//store4_post_roll_toV12
-	//store4toV12linear x1
 	store4linear_post_roll_toV12	x1
 	
 	Xoodoo
@@ -881,21 +878,23 @@ Compressiontimes4n_sum:
 
 Expansiontimes4n_first:
 
-	load1toV0		0, x0
+	load1toV0		0, x1
 
 	first_roll_Xe
 	
-	//first_storeRoll_full	x2
-	store4toV0linear	x2
+	//first_storeRoll_full	x3
+	store4toV0linear	x3
 	
 	Xoodoo
 	
-	load1toV12_4times	x1
-	//load4toV12linear 	x1 //for performance comparison only
-	//SUB x1, x1, #32
-	store4toV12linear	x3
+	load1toV12_4times	x2
+	//load4toV12linear 	x2 //for performance comparison only
+	//SUB x2, x2, #32
+	store4toV12linear	x4
 	
 	sum
+	
+	store4toV0		x0
 	
 	
 	RET
@@ -906,20 +905,22 @@ Expansiontimes4n_first:
 
 Expansiontimes4n_first2:
 
-	load1toV0		0, x0
+	load1toV0		0, x1
 
 	first_roll_Xe
 	
-	//first_storeRoll_full	x2
-	store4toV0linear	x2
+	//first_storeRoll_full	x3
+	store4toV0linear	x3
 	
 	Xoodoo
 	
-	load1copy4toV12		x1
-	//SUB x1, x1, #32
-	store4toV12linear	x3
+	load1copy4toV12		x2
+	//SUB x2, x2, #32
+	store4toV12linear	x4
 	
 	sum
+	
+	store4toV0		x0
 	
 	
 	RET
@@ -1039,7 +1040,7 @@ Expansiontimes4n:
 
 	//load4toV0		x1
 	//SUB	x1, x1, #176
-	load4toV0linear	x1
+	load4toV0linear		x1
 
 	roll_Xe
 	
@@ -1049,13 +1050,13 @@ Expansiontimes4n:
 	
 	XoodooPostRoll
 	
-	//load1toV12_4times x2
-	//load1copy4toV12 x2
-	load4toV12linear x2
+	//load1toV12_4times	x2
+	//load1copy4toV12	x2
+	load4toV12linear	x2
 
 	sum
 	
-	//store4toV0 x0
+	store4toV0		x0
 
 	RET //x0
 

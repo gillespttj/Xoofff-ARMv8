@@ -29,12 +29,12 @@ void Xoodootimes4sha_no_interleaving_6rounds(unsigned int *src, unsigned int *de
 
 void Compressiontimes4n_first(unsigned int *src, unsigned int *k, unsigned int *work_mem); 
 void Compressiontimes4n(unsigned int *src, unsigned int *work_mem);
-void Compressiontimes4n_first_sum(unsigned int *src, unsigned int *k, unsigned int *work_mem, unsigned int *sum); 
-void Compressiontimes4n_sum(unsigned int *src, unsigned int *work_mem, unsigned int *sum);
+void Compressiontimes4n_first_sum(unsigned int *src, unsigned int *k, unsigned int *work_mem, unsigned int *accumulator); 
+void Compressiontimes4n_sum(unsigned int *src, unsigned int *work_mem, unsigned int *accumulator);
 
-void Expansiontimes4n_first(unsigned int *sum, unsigned int *k, unsigned int *work_mem, unsigned int *work_mem2); 
-void Expansiontimes4n_first2(unsigned int *sum, unsigned int *k, unsigned int *work_mem, unsigned int *work_mem2); 
-void Expansiontimes4n(unsigned int *k, unsigned int *work_mem, unsigned int *work_mem2);
+void Expansiontimes4n_first(unsigned int *out, unsigned int *sum, unsigned int *k, unsigned int *work_mem, unsigned int *work_mem2); 
+void Expansiontimes4n_first2(unsigned int *out, unsigned int *sum, unsigned int *k, unsigned int *work_mem, unsigned int *work_mem2); 
+void Expansiontimes4n(unsigned int *out, unsigned int *work_mem, unsigned int *work_mem2);
 
 void store_n(unsigned int *dest);
 

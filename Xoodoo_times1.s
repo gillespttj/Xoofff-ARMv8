@@ -313,8 +313,29 @@ Compressiontimes1:
 	
 	Xoodoo
 	
-	//load_toV16	x0
-	//sum
+	store_toV4	x2
+
+
+	RET
+	
+	
+.align 16
+.global Compressiontimes1_sum
+.type Compressiontimes1_sum, %function
+Compressiontimes1_sum:
+
+	load_toV4_pre_roll	x1
+	roll_Xc
+	
+	load_toV16	x0
+	store_toV4	x1
+	
+	sum
+	
+	Xoodoo
+	
+	load_toV16	x0
+	sum
 	
 	store_toV4	x2
 
