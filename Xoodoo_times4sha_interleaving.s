@@ -1443,6 +1443,7 @@ Compressiontimes4i_sum:
 	Xoodoo
 	
 	load4linear_toV12 	x2
+	SUB	x2, x2, #128
 	
 	sum
 	

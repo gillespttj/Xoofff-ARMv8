@@ -51,7 +51,8 @@ int main(int argc, char *argv[])
 			xoodoo4no_sha_no_interleave=0, xoodoo1=0, xoodoo1ref=0, comp_i=0, comp_i2=0, comp_n=0, exp_n=0,
 			exp_n2=0, exp_i=0, help=0, comp_i_first=0, comp_i_first2=0, comp_i_second=0, comp_n_first=0,
 			comp_n_second=0, exp_i_first=0, exp_i_second=0, exp_n_first=0, exp_n_first2=0, exp_n_second=0,
-			xoodoo4sha_interleave_no_interleave=0, comp1=0, exp1=0;
+			xoodoo4sha_interleave_no_interleave=0, comp1=0, exp1=0, exp1first=0, exp1second=0, comp1first=0,
+			comp1second=0;
 		
 		for(int i=1; i<argc; i++)
 		{
@@ -86,6 +87,10 @@ int main(int argc, char *argv[])
 			else if(strcmp(argv[1], "expNfirst") == 0) exp_n_first = 1;
 			else if(strcmp(argv[1], "expNfirst2") == 0) exp_n_first2 = 1;
 			else if(strcmp(argv[1], "expNsecond") == 0) exp_n_second = 1;
+			else if(strcmp(argv[1], "comp1first") == 0) comp1first = 1;
+			else if(strcmp(argv[1], "comp1second") == 0) comp1second = 1;
+			else if(strcmp(argv[1], "exp1first") == 0) exp1first = 1;
+			else if(strcmp(argv[1], "exp1second") == 0) exp1second = 1;
 			else if(strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) help = 1;
 			else printf("Wrong argument, type %s -h help.\n", argv[0]);
 		}
@@ -451,6 +456,7 @@ int main(int argc, char *argv[])
 			
 			measureTimingBeginDeclared
 				thousand(Compressiontimes4i_sum(a, c, b));
+				//thousand(Compressiontimes4i(a, c));
 			measureTimingEnd
 			print_timing_results // */
 			
@@ -533,6 +539,31 @@ int main(int argc, char *argv[])
 			free(d);
 		}
 		
+		if (comp1first) {
+			measureTimingBeginDeclared
+				thousand(Compressiontimes1first(a, k, b));
+			measureTimingEnd
+			print_timing_results
+		}
+		if (comp1second) {
+			measureTimingBeginDeclared
+				thousand(Compressiontimes1(a, k, b));
+			measureTimingEnd
+			print_timing_results
+		}
+		if (exp1first) {
+			measureTimingBeginDeclared
+				thousand(Expansiontimes1first(a, k, b));
+			measureTimingEnd
+			print_timing_results
+		}
+		if (exp1second) {
+			measureTimingBeginDeclared
+				thousand(Expansiontimes1(a, k, b));
+			measureTimingEnd
+			print_timing_results
+		}
+		
 		
 		
 		
@@ -559,6 +590,8 @@ int main(int argc, char *argv[])
 			printf("- compN: 4 parrallel runs of Xoofff compression using SIMD, SHA3 instructions but no bit Interleaving\n");
 			printf("- expI: 4 parrallel runs of Xoofff expansion using SIMD, SHA3 instructions and bit Interleaving\n");
 			printf("- expN(2): 4 parrallel runs of Xoofff expansion using SIMD, SHA3 instructions but no bit Interleaving\n");
+			printf("- comp1: 4 consecutive runs of scalar Xoofff compression\n");
+			printf("- exp1: 4 consecutive runs of scalar Xoofff expansion\n");
 			printf("- compIfirst(2): first 4 parrallel rounds of Xoofff compression using SIMD, SHA3 instructions and bit Interleaving\n");
 			printf("- compIsecond: 4 next rounds of Xoofff compression using SIMD, SHA3 instructions and bit Interleaving\n");
 			printf("- compNfirst: first 4 parrallel rounds of Xoofff compression using SIMD, SHA3 instructions but no bit Interleaving\n");
@@ -567,6 +600,10 @@ int main(int argc, char *argv[])
 			printf("- expIsecond: 4 next rounds of Xoofff expansion using SIMD, SHA3 instructions and bit Interleaving\n");
 			printf("- expNfirst(2): first 4 parrallel rounds of Xoofff expansion using SIMD, SHA3 instructions but no bit Interleaving\n");
 			printf("- expNsecond: 4 next rounds of Xoofff expansion using SIMD, SHA3 instructions but no bit Interleaving\n");
+			printf("- comp1first: first run of scalar Xoofff compression\n");
+			printf("- comp1second: next run of scalar Xoofff compression\n");
+			printf("- exp1first: first run of scalar Xoofff expansion\n");
+			printf("- exp1second: next run of scalar Xoofff expansion\n");
 			
 			printf("- -h or --help: returns this help text\n");
 			printf("\n");
