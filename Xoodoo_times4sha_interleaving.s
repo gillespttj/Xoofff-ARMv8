@@ -1416,6 +1416,7 @@ Compressiontimes4i_first_sum:
 	
 	load4interleave		x0
 	interleave
+	//load4			x0 //middle load
 	
 	load4linear_toV12 	x2
 	
@@ -1434,6 +1435,7 @@ Compressiontimes4i_sum:
 	
 	load4interleave		x0
 	interleave
+	//load4			x0 //middle load
 	
 	load4linear_toV12	x1
 	SUB	x1, x1, #128
@@ -1546,6 +1548,7 @@ Expansiontimes4i_first:
 	sum
 	
 	deinterleave_store x0
+	//store4	x0 //middle load 
 	
 	
 	RET
@@ -1702,6 +1705,7 @@ Expansiontimes4i:
 	sum
 	
 	deinterleave_store	x0
+	//store4		x0 //middle load
 	
 	RET
 
